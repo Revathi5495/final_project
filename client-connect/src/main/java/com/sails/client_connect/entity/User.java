@@ -22,9 +22,6 @@ public class User {
     @NotBlank(message = "Lastname is required")
     private String lastName;
 
-//    @NotBlank(message = "Username is required")
-//    private String username;
-
     @NotBlank(message = "Email is required")
     private String email;
 
@@ -42,13 +39,4 @@ public class User {
     @OneToMany(mappedBy = "assignedTo")
     private Set<Task> tasks;
 
-//    private boolean active;
-//
-//    private boolean accountNonExpired;
-//
-//    private boolean accountNonLocked;
-//
-//    private boolean credentialsNonExpired;
-//
-//    private boolean enabled;
 }
