@@ -19,6 +19,9 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    private String clientName;
+
     @NotBlank(message = "Task Title is required")
     private String taskTitle;
 
@@ -35,6 +38,14 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    private boolean deleted = false;
+
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
+
+    @Column(name = "last_updated_date")
+    private LocalDateTime lastUpdatedDate;
+
     @ManyToOne
     @JoinColumn(name = "assigned_to_id")
     private User assignedTo;
@@ -42,12 +53,5 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
-}
-enum Priority {
-    LOW, MEDIUM, HIGH
-}
-
-enum Status {
-    NOT_STARTED, IN_PROGRESS, COMPLETED
 }
 
