@@ -9,4 +9,9 @@ public class UserController {
         return "hello";
     }
 
+    @GetMapping("/hello-world")
+    public String sayHello2(){
+        return "hello World";
+    }
+
 }
