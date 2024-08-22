@@ -39,16 +39,17 @@ public class LeadController {
         return new ResponseEntity<>(leads, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<LeadDTO> updateLead(
-            @PathVariable Long id, @Valid @RequestBody LeadDTO leadDTO) {
-        LeadDTO updatedLead = leadService.updateLead(id, leadDTO);
-        return new ResponseEntity<>(updatedLead, HttpStatus.OK);
-    }
+        @PutMapping("/{id}")
+        public ResponseEntity<LeadDTO> updateLead(
+                @PathVariable Long id, @Valid @RequestBody LeadDTO leadDTO) {
+            LeadDTO updatedLead = leadService.updateLead(id, leadDTO);
+            return new ResponseEntity<>(updatedLead, HttpStatus.OK);
+        }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLead(@PathVariable Long id) {
-        leadService.deleteLead(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Void> deleteLead(@PathVariable Long id) {
+            leadService.deleteLead(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
 }
