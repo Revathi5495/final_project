@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 @Data
 public class TaskDTO {
 
-    private Long id;
-
     private String clientName;
 
     @NotBlank(message = "Task Title is required")
