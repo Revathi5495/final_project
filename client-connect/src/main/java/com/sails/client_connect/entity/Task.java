@@ -46,7 +46,7 @@ public class Task {
     @Column(name = "last_updated_date")
     private LocalDateTime lastUpdatedDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_to_id")
     private User assignedTo;
 
