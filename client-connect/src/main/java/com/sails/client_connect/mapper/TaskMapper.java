@@ -4,12 +4,18 @@ import com.sails.client_connect.dto.TaskDTO;
 import com.sails.client_connect.entity.Task;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = {UserMapper.class, CustomerMapper.class})
 public interface TaskMapper {
 
     @Mapping(source = "assignedTo.id", target = "assignedToId")
     @Mapping(source = "customer.id", target = "customerId")
     TaskDTO toDTO(Task task);
+
+    @Mapping(source = "assignedTo.id", target = "assignedToId")
+    @Mapping(source = "customer.id", target = "customerId")
+    List<TaskDTO> toDTOList(List<Task> taskList);
 
     @Mapping(source = "assignedToId", target = "assignedTo")
     @Mapping(source = "customerId", target = "customer")
