@@ -1,14 +1,13 @@
 package com.sails.client_connect.dto;
 
 import lombok.Data;
+import java.util.List;
 
 @Data
-public class LeadDTO {
+public class CustomerDTO {
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String gender;
+    private String name;
     private String email;
     private String phoneNumber;
-   // private String address;
+    private List<AppointmentDTO> appointments;
 }
