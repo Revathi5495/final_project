@@ -17,8 +17,8 @@ public interface TaskMapper {
     @Mapping(source = "customer.id", target = "customerId")
     List<TaskDTO> toDTOList(List<Task> taskList);
 
-    @Mapping(source = "assignedToId", target = "assignedTo")
-    @Mapping(source = "customerId", target = "customer")
+    @Mapping(source = "assignedToId", target = "assignedTo.id")
+    @Mapping(source = "customerId", target = "customer.id")
     Task toEntity(TaskDTO taskDTO);
 
     @Mapping(target = "id", ignore = true)
