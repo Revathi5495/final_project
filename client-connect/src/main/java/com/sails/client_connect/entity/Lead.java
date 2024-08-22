@@ -37,4 +37,6 @@ public class Lead {
     @Size(min = 10, max = 10, message = "Phone number must be 10 digits")
     @Pattern(regexp = "\\d{10}", message = "Phone number must contain digits only")
     private String phoneNumber;
+    //@NotBlank(message = "address is required")
+   // private String address;
 }

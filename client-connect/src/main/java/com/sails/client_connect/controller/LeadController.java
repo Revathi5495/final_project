@@ -1,6 +1,7 @@
 package com.sails.client_connect.controller;
 
 import com.sails.client_connect.dto.LeadDTO;
+import com.sails.client_connect.response.ApiResponse;
 import com.sails.client_connect.service.LeadService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,16 @@ public class LeadController {
     }
 
     @PostMapping("/create-lead")
-    public ResponseEntity<LeadDTO> createLead(@Valid @RequestBody LeadDTO leadDTO) {
+    public ResponseEntity<ApiResponse<LeadDTO>> createLead(@Valid @RequestBody LeadDTO leadDTO) {
         LeadDTO createdLead = leadService.createLead(leadDTO);
-        return new ResponseEntity<>(createdLead, HttpStatus.CREATED);
+        ApiResponse<LeadDTO> response = new ApiResponse<>(
+                "Lead created successfully",
+                HttpStatus.CREATED,
+                createdLead
+        );
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<LeadDTO> getLeadById(@PathVariable Long id) {
@@ -39,17 +46,29 @@ public class LeadController {
         return new ResponseEntity<>(leads, HttpStatus.OK);
     }
 
-        @PutMapping("/{id}")
-        public ResponseEntity<LeadDTO> updateLead(
-                @PathVariable Long id, @Valid @RequestBody LeadDTO leadDTO) {
-            LeadDTO updatedLead = leadService.updateLead(id, leadDTO);
-            return new ResponseEntity<>(updatedLead, HttpStatus.OK);
-        }
 
-        @DeleteMapping("/{id}")
-        public ResponseEntity<Void> deleteLead(@PathVariable Long id) {
-            leadService.deleteLead(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<LeadDTO>> updateLead(
+            @PathVariable Long id, @Valid @RequestBody LeadDTO leadDTO) {
+        LeadDTO updatedLead = leadService.updateLead(id, leadDTO);
+        ApiResponse<LeadDTO> response = new ApiResponse<>(
+                "Lead updated successfully",
+                HttpStatus.OK,
+                updatedLead
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteLead(@PathVariable Long id) {
+        leadService.deleteLead(id);
+        ApiResponse<Void> response = new ApiResponse<>(
+                "Lead deleted successfully",
+                HttpStatus.OK,
+                null
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 
 }

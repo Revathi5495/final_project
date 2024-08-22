@@ -2,6 +2,7 @@ package com.sails.client_connect.service;
 
 import com.sails.client_connect.dto.LeadDTO;
 import com.sails.client_connect.entity.Lead;
+import com.sails.client_connect.exception.UserNotFoundException;
 import com.sails.client_connect.mapper.LeadMapper;
 import com.sails.client_connect.repository.LeadRepository;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class LeadService {
     public LeadDTO getLeadById(Long id) {
         return leadRepository.findById(id)
                 .map(leadMapper::toDto)
-                .orElseThrow(() -> new RuntimeException("Lead not found with id " + id));
+                .orElseThrow(() -> new UserNotFoundException("Lead not found with id " + id));
     }
 
     public List<LeadDTO> getAllLeads() {
@@ -43,20 +44,30 @@ public class LeadService {
 
     public LeadDTO updateLead(Long id, LeadDTO leadDTO) {
         Lead lead = leadRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lead not found with id " + id));
-        // Update the lead's fields
-        lead.setFirstName(leadDTO.getFirstName());
-        lead.setLastName(leadDTO.getLastName());
-        lead.setGender(leadDTO.getGender());
-        lead.setEmail(leadDTO.getEmail());
-        lead.setPhoneNumber(leadDTO.getPhoneNumber());
+                .orElseThrow(() -> new UserNotFoundException("Lead not found with id " + id));
+        // Update the lead's fields if they are present in the DTO
+        if (leadDTO.getFirstName() != null) {
+            lead.setFirstName(leadDTO.getFirstName());
+        }
+        if (leadDTO.getLastName() != null) {
+            lead.setLastName(leadDTO.getLastName());
+        }
+        if (leadDTO.getGender() != null) {
+            lead.setGender(leadDTO.getGender());
+        }
+        if (leadDTO.getEmail() != null) {
+            lead.setEmail(leadDTO.getEmail());
+        }
+        if (leadDTO.getPhoneNumber() != null) {
+            lead.setPhoneNumber(leadDTO.getPhoneNumber());
+        }
         var updatedLead = leadRepository.save(lead);
         return leadMapper.toDto(updatedLead);
     }
 
     public void deleteLead(Long id) {
         if (!leadRepository.existsById(id)) {
-            throw new RuntimeException("Lead not found with id " + id);
+            throw new UserNotFoundException("Lead not found with id " + id);
         }
         leadRepository.deleteById(id);
     }
