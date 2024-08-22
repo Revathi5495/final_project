@@ -6,7 +6,7 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class, CustomerMapper.class})
+//@Mapper(componentModel = "spring", uses = {UserMapper.class, CustomerMapper.class})
 public interface TaskMapper {
 
     @Mapping(source = "assignedTo.id", target = "assignedToId")
