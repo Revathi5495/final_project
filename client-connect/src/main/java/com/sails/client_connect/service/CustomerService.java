@@ -4,6 +4,10 @@ import com.sails.client_connect.dto.CustomerDTO;
 import com.sails.client_connect.entity.Customer;
 import com.sails.client_connect.mapper.CustomerMapper;
 import com.sails.client_connect.repository.CustomerRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,10 +77,35 @@ public class CustomerService {
         customerRepository.deleteById(id);
     }
 
-    public List<CustomerDTO> searchCustomers(String query) {
-        List<Customer> customers = customerRepository.searchCustomers(query);
-        return customers.stream()
-                .map(customerMapper::toDto)
-                .collect(Collectors.toList());
+//    public List<CustomerDTO> searchCustomers(String query) {
+//        List<Customer> customers = customerRepository.searchCustomers(query);
+//        return customers.stream()
+//                .map(customerMapper::toDto)
+//                .collect(Collectors.toList());
+//    }
+
+    public Page<CustomerDTO> searchCustomers(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Customer> customerPage = customerRepository.searchCustomers(query,pageable );
+        return customerPage.map(this::convertToDTO);
+    }
+
+
+    public Page<CustomerDTO> filterAndSortCustomers(Long id, String firstName, String lastName,
+                                                    String email, String phoneNumber, String address,
+                                                    int page, int size, Sort sort) {
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Customer> customerPage = customerRepository.filterAndSortCustomers(id, firstName, lastName, email, phoneNumber, address, pageable);
+        return customerPage.map(this::convertToDTO);
+    }
+    private CustomerDTO convertToDTO(Customer customer) {
+        return CustomerDTO.builder()
+                .id(customer.getId())
+                .firstName(customer.getFirstName())
+                .lastName(customer.getLastName())
+                .email(customer.getEmail())
+                .phoneNumber(customer.getPhoneNumber())
+                .address(customer.getAddress())
+                .build();
     }
 }

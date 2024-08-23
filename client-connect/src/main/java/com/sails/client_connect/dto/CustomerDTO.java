@@ -1,9 +1,11 @@
 package com.sails.client_connect.dto;
 
+import lombok.Builder;
 import lombok.Data;
 import java.util.List;
 
 @Data
+@Builder
 public class CustomerDTO {
     private Long id;
     private String firstName;
