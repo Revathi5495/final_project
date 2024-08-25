@@ -1,13 +1,12 @@
 package com.sails.client_connect.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -36,5 +35,8 @@ public class Customer {
     @Size(min = 10, max = 10, message = "Phone number must be 10 digits")
     @Pattern(regexp = "\\d{10}", message = "Phone number must contain digits only")
     private String phoneNumber;
+
+//    @OneToMany(mappedBy = "customer")
+//    private List<Task> tasks;
 }
 
