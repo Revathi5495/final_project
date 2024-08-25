@@ -2,7 +2,9 @@ package com.sails.client_connect.controller;
 
 import com.sails.client_connect.dto.TaskDTO;
 import com.sails.client_connect.entity.Priority;
+import com.sails.client_connect.exception.UserNotFoundException;
 import com.sails.client_connect.service.TaskService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,44 +29,44 @@ public class TaskController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long id) {
-        Optional<TaskDTO> taskDTO = taskService.getTaskById(id);
-        return taskDTO.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        TaskDTO taskDTO = taskService.getTaskById(id);
+        return ResponseEntity.ok(taskDTO);
     }
 
+
     @PostMapping("/create")
-    public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody TaskDTO taskDTO) {
         TaskDTO createdTask = taskService.createTask(taskDTO);
         return ResponseEntity.ok(createdTask);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO) {
-        Optional<TaskDTO> updatedTask = taskService.updateTask(id, taskDTO);
-        return updatedTask.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<TaskDTO> patchUpdateTask(@PathVariable Long id,@RequestBody TaskDTO taskDTO) {
+        TaskDTO updatedTask = taskService.patchUpdateTask(id, taskDTO);
+        return ResponseEntity.ok(updatedTask);
     }
 
+
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) throws UserNotFoundException {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
     //indira
-    @GetMapping("/sortedByPriority")
-    public List<TaskDTO> getTasksSortedByPriority(@RequestParam(required = false) String sortBy) {
-        return taskService.getTasksSortedByPriority(sortBy);
-    }
-    @GetMapping("/sortedByDueDate")
-    public List<TaskDTO> getTasksSortedByDueDate(@RequestParam(required = false) String sortBy) {
-        return taskService.getTasksSortedByDueDate(sortBy);
-    }
-    @GetMapping("/sortedByStatus")
-    public List<TaskDTO> getTasksSortedByStatus(@RequestParam(required = false) String sortBy) {
-        return taskService.getTasksSortedByStatus(sortBy);
-    }
-    @GetMapping("/filterByPriority")
-    public List<TaskDTO> getTasksByPriority(@RequestParam Priority priority) {
-        return taskService.getTasksByPriority(priority);
-    }
+//    @GetMapping("/sortedByPriority")
+//    public List<TaskDTO> getTasksSortedByPriority(@RequestParam(required = false) String sortBy) {
+//        return taskService.getTasksSortedByPriority(sortBy);
+//    }
+//    @GetMapping("/sortedByDueDate")
+//    public List<TaskDTO> getTasksSortedByDueDate(@RequestParam(required = false) String sortBy) {
+//        return taskService.getTasksSortedByDueDate(sortBy);
+//    }
+//    @GetMapping("/sortedByStatus")
+//    public List<TaskDTO> getTasksSortedByStatus(@RequestParam(required = false) String sortBy) {
+//        return taskService.getTasksSortedByStatus(sortBy);
+//    }
+//    @GetMapping("/filterByPriority")
+//    public List<TaskDTO> getTasksByPriority(@RequestParam Priority priority) {
+//        return taskService.getTasksByPriority(priority);
+//    }
 }

@@ -45,9 +45,5 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     @Column(name = "recurrence_pattern")
     private RecurrencePattern recurrencePattern;
-
-    public enum RecurrencePattern {
-        DAILY, WEEKLY, MONTHLY, CUSTOM
-    }
 }
 

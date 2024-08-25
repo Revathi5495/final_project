@@ -1,6 +1,7 @@
 package com.sails.client_connect.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class Task {
     private String description;
 
     @NotNull(message = "Due Date and Time is required")
+    @Future(message = "Due Date and Time should be in future")
     private LocalDateTime dueDateTime;
 
     @NotNull(message = "Priority is required")
@@ -37,6 +39,10 @@ public class Task {
     @NotNull(message = "Status is required")
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    //@Enumerated(EnumType.STRING)
+    @Column(name = "recurrence_pattern")
+    private String recurrencePattern;
 
     private boolean deleted = false;
 
@@ -53,5 +59,6 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
+
 }
 
