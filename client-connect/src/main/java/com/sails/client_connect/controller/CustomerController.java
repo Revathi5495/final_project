@@ -5,6 +5,8 @@ import com.sails.client_connect.response.ApiResponse;
 import com.sails.client_connect.service.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,10 +69,38 @@ public class CustomerController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    //    @GetMapping("/search")
+//    public ResponseEntity<List<CustomerDTO>> searchCustomers(@RequestParam(required = false) String query) {
+//        List<CustomerDTO> customers = customerService.searchCustomers(query != null ? query : "");
+//        return new ResponseEntity<>(customers, HttpStatus.OK);
+//    }
     @GetMapping("/search")
-    public ResponseEntity<List<CustomerDTO>> searchCustomers(@RequestParam(required = false) String query) {
-        List<CustomerDTO> customers = customerService.searchCustomers(query != null ? query : "");
-        return new ResponseEntity<>(customers, HttpStatus.OK);
+    public ResponseEntity<Page<CustomerDTO>> searchCustomers(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<CustomerDTO> customerPage = customerService.searchCustomers(query, page, size);
+        return ResponseEntity.ok(customerPage);
+
+    }
+
+    @GetMapping("/filter-sort")
+    public ResponseEntity<Page<CustomerDTO>> filterAndSortCustomers(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phoneNumber,
+            @RequestParam(required = false) String address,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "firstName") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+        Page<CustomerDTO> customerPage = customerService.filterAndSortCustomers(id, firstName, lastName, email, phoneNumber, address, page, size, sort);
+        return ResponseEntity.ok(customerPage);
     }
 
 }
