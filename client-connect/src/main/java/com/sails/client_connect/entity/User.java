@@ -47,6 +47,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -72,7 +73,16 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "assignedTo")
+    @OneToMany(mappedBy = "assignedTo",cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Task> tasks;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Appointment> appointments;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Lead> leads;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Customer> customers;
 
 }

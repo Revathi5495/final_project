@@ -21,10 +21,10 @@ public interface TaskMapper {
     @Mapping(source = "customerId", target = "customer.id")
     Task toEntity(TaskDTO taskDTO);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdDate", ignore = true)
-    @Mapping(target = "lastUpdatedDate", ignore = true)
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateTaskFromDTO(TaskDTO taskDTO, @MappingTarget Task task);
+//    @Mapping(target = "id", ignore = true)
+//    @Mapping(target = "createdDate", ignore = true)
+//    @Mapping(target = "lastUpdatedDate", ignore = true)
+//    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+//    void updateTaskFromDTO(TaskDTO taskDTO, @MappingTarget Task task);
 }
 

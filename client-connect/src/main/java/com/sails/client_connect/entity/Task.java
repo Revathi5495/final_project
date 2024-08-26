@@ -60,5 +60,8 @@ public class Task {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @OneToOne(mappedBy = "task", cascade = CascadeType.ALL)
+    private Appointment appointment;
+
 }
 

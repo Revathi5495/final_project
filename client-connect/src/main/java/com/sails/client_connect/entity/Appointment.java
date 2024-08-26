@@ -45,5 +45,13 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     @Column(name = "recurrence_pattern")
     private RecurrencePattern recurrencePattern;
+
+    @OneToOne
+    @JoinColumn(name = "task_id")
+    private Task task;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
 
