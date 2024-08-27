@@ -9,7 +9,8 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -46,7 +47,8 @@ public class Customer {
     @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Appointment> appointments;
 
-    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Lead> leads;
+//    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Lead> leads;
+
 }
 

@@ -4,8 +4,10 @@ package com.sails.client_connect.controller;
 import com.sails.client_connect.dto.UserAuth;
 import com.sails.client_connect.dto.UserAuthRequest;
 import com.sails.client_connect.dto.UserDto;
+import com.sails.client_connect.entity.User;
 import com.sails.client_connect.service.JwtService;
 import com.sails.client_connect.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,10 +63,15 @@ public class UserController {
 
 
     @PostMapping("/authenticate")
-    public String authenticateAndGetToken(@RequestBody UserAuthRequest userAuthRequest) {
+    public String authenticateAndGetToken(@RequestBody UserAuthRequest userAuthRequest, HttpSession session) {
         Authentication authenticate = authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(userAuthRequest.getUsername(), userAuthRequest.getPassword()));
 
         if(authenticate.isAuthenticated()) {
+            // Get the authenticated user
+            User authenticatedUser = userService.findByUsername(userAuthRequest.getUsername());
+
+            // Store user ID in session
+            session.setAttribute("userId", authenticatedUser.getUser_id());
             return jwtService.generateToken(userAuthRequest.getUsername());
         }
         else{

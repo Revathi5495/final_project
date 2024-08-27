@@ -7,6 +7,7 @@ import com.sails.client_connect.dto.UserDto;
 import com.sails.client_connect.entity.Role;
 import com.sails.client_connect.entity.RoleName;
 import com.sails.client_connect.entity.User;
+import com.sails.client_connect.exception.UserNotFoundException;
 import com.sails.client_connect.repository.RoleRepository;
 import com.sails.client_connect.repository.UserRepository;
 import jakarta.mail.MessagingException;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -86,4 +88,8 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow();
+    }
 }

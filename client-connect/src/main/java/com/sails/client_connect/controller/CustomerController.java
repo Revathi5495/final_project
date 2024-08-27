@@ -3,6 +3,7 @@ package com.sails.client_connect.controller;
 import com.sails.client_connect.dto.CustomerDTO;
 import com.sails.client_connect.response.ApiResponse;
 import com.sails.client_connect.service.CustomerService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/user/customers")
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -23,8 +24,28 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
+    //    @PostMapping("/create-customer")
+//    public ResponseEntity<ApiResponse<CustomerDTO>> createCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
+//        CustomerDTO createdCustomer = customerService.createCustomer(customerDTO);
+//        ApiResponse<CustomerDTO> response = new ApiResponse<>(
+//                "Customer created successfully",
+//                HttpStatus.CREATED,
+//                createdCustomer
+//        );
+//        return new ResponseEntity<>(response, HttpStatus.CREATED);
+//    }
     @PostMapping("/create-customer")
-    public ResponseEntity<ApiResponse<CustomerDTO>> createCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
+    public ResponseEntity<ApiResponse<CustomerDTO>> createCustomer(
+            @Valid @RequestBody CustomerDTO customerDTO,
+            HttpSession session) {
+
+        // Retrieve the user_id from the session
+        Long userId = (Long) session.getAttribute("userId");
+
+        // Set the user_id in the customerDTO
+        customerDTO.setUserId(userId);
+
+        // Create the customer
         CustomerDTO createdCustomer = customerService.createCustomer(customerDTO);
         ApiResponse<CustomerDTO> response = new ApiResponse<>(
                 "Customer created successfully",
@@ -48,7 +69,20 @@ public class CustomerController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<CustomerDTO>> updateCustomer(
-            @PathVariable Long id, @Valid @RequestBody CustomerDTO customerDTO) {
+            @PathVariable Long id,
+            @Valid @RequestBody CustomerDTO customerDTO,
+            HttpSession session) {
+
+        // Retrieve the user_id from the session
+        Long userId = (Long) session.getAttribute("userId");
+
+         //Set the user_id in the customerDTO
+        if (userId != null) {
+            customerDTO.setUserId(userId);
+        }
+
+
+        // Update the customer
         CustomerDTO updatedCustomer = customerService.updateCustomer(id, customerDTO);
         ApiResponse<CustomerDTO> response = new ApiResponse<>(
                 "Customer updated successfully",
@@ -57,6 +91,7 @@ public class CustomerController {
         );
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteCustomer(@PathVariable Long id) {

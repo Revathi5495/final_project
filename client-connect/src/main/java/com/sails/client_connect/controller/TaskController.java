@@ -4,6 +4,7 @@ import com.sails.client_connect.dto.TaskDTO;
 import com.sails.client_connect.entity.Priority;
 import com.sails.client_connect.exception.UserNotFoundException;
 import com.sails.client_connect.service.TaskService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/tasks")
+@RequestMapping("/user/tasks")
 public class TaskController {
 
     private final TaskService taskService;
@@ -35,13 +36,19 @@ public class TaskController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody TaskDTO taskDTO, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        taskDTO.setAssignedToId(userId);
         TaskDTO createdTask = taskService.createTask(taskDTO);
         return ResponseEntity.ok(createdTask);
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<TaskDTO> patchUpdateTask(@PathVariable Long id,@RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<TaskDTO> patchUpdateTask(@PathVariable Long id,@RequestBody TaskDTO taskDTO,HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId != null) {
+            taskDTO.setAssignedToId(userId);
+        }
         TaskDTO updatedTask = taskService.patchUpdateTask(id, taskDTO);
         return ResponseEntity.ok(updatedTask);
     }

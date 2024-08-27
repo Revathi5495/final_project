@@ -2,8 +2,10 @@ package com.sails.client_connect.service;
 
 import com.sails.client_connect.dto.CustomerDTO;
 import com.sails.client_connect.entity.Customer;
+import com.sails.client_connect.entity.User;
 import com.sails.client_connect.mapper.CustomerMapper;
 import com.sails.client_connect.repository.CustomerRepository;
+import com.sails.client_connect.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,14 +22,19 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final UserRepository userRepository;
 
-    public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper) {
+    public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper, UserRepository userRepository) {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
+        this.userRepository=userRepository;
     }
 
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
         Customer customer = customerMapper.toEntity(customerDTO);
+        User user = userRepository.findById(customerDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        customer.setUser(user);
         Customer savedCustomer = customerRepository.save(customer);
         return customerMapper.toDto(savedCustomer);
     }
@@ -64,6 +71,14 @@ public class CustomerService {
         if (customerDTO.getPhoneNumber() != null) {
             customer.setPhoneNumber(customerDTO.getPhoneNumber());
         }
+
+        // Update the user if userId is present in the DTO
+        if (customerDTO.getUserId() != null) {
+            User user = userRepository.findById(customerDTO.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found with id " + customerDTO.getUserId()));
+            customer.setUser(user);
+        }
+
 
         Customer updatedCustomer = customerRepository.save(customer);
         return customerMapper.toDto(updatedCustomer);
