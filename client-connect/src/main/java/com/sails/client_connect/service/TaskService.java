@@ -1,5 +1,6 @@
 package com.sails.client_connect.service;
 
+import com.sails.client_connect.dto.CustomerDTO;
 import com.sails.client_connect.dto.TaskDTO;
 import com.sails.client_connect.entity.Customer;
 import com.sails.client_connect.entity.Priority;
@@ -224,6 +225,12 @@ public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
 //        List<Task> tasks = taskRepository.findByDeletedFalseAndPriority(priority);
 //        return taskMapper.toDTOList(tasks);
 //    }
+    public List<TaskDTO> getAllTasksToAdminView() {
+        List<Task> tasks = taskRepository.findAll();
+        return tasks.stream()
+                .map(taskMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 public List<TaskDTO> getAllTasks(String sortBy, String filterBy, String filterValue) {
     List<Task> tasks = taskRepository.findByDeletedFalse();
 
