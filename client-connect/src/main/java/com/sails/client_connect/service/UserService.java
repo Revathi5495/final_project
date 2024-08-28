@@ -44,7 +44,7 @@ public class UserService {
 
         String dummyPassword = userAuth.getPassword();
         String encodedPassword = passwordEncoder.encode(dummyPassword); //hashing the password
-        String fromEmail = "indira.ramayanam20@gmail.com";
+        String fromEmail = "dummy.rip69@gmail.com";
 
 
         User user = new User();
@@ -81,6 +81,12 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+    }
+
+
     public void updatePassword(String username, String newPassword) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -88,8 +94,5 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow();
-    }
+    
 }
