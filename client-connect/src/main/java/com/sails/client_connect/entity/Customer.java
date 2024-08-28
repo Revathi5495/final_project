@@ -1,6 +1,7 @@
 package com.sails.client_connect.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -27,6 +28,7 @@ public class Customer {
     private String lastName;
 
     @NotBlank(message = "Email is required")
+    @Email
     private String email;
 
     @NotBlank(message = "address is required")

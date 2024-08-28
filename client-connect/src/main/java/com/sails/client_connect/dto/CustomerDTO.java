@@ -1,5 +1,6 @@
 package com.sails.client_connect.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -21,6 +22,7 @@ public class CustomerDTO {
     private String lastName;
 
     @NotBlank(message = "Email is required")
+    @Email
     private String email;
 
     @NotBlank(message = "Address is required")
