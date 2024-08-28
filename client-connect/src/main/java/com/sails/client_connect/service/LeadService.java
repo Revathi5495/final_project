@@ -5,6 +5,7 @@ import com.sails.client_connect.entity.Lead;
 import com.sails.client_connect.exception.UserNotFoundException;
 import com.sails.client_connect.mapper.LeadMapper;
 import com.sails.client_connect.repository.LeadRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,16 +14,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+//@Transactional
+@RequiredArgsConstructor
 public class LeadService {
 
     private final LeadRepository leadRepository;
     private final LeadMapper leadMapper;
-
-    public LeadService(LeadRepository leadRepository, LeadMapper leadMapper) {
-        this.leadRepository = leadRepository;
-        this.leadMapper = leadMapper;
-    }
 
     public LeadDTO createLead(LeadDTO leadDTO) {
         var lead = leadMapper.toEntity(leadDTO);
