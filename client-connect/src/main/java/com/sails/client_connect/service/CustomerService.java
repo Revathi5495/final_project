@@ -55,6 +55,13 @@ public class CustomerService {
                 .map(customerMapper::toDto)
                 .collect(Collectors.toList());
     }
+    public List<CustomerDTO> getAllCustomers() {
+        return customerRepository.findAll().stream()
+                .map(customerMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+
 
     public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
         Customer customer = customerRepository.findById(id)

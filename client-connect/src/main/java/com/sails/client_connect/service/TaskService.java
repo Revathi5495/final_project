@@ -50,6 +50,13 @@ public class TaskService {
                 .orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id));
     }
 
+    public List<TaskDTO> getAllTasksToAdminView() {
+        List<Task> tasks = taskRepository.findAll();
+        return tasks.stream()
+                .map(taskMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
 
     public TaskDTO createTask(TaskDTO taskDTO) {
 //        Task task = taskMapper.toEntity(taskDTO);
@@ -139,8 +146,6 @@ public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
     // Convert updated entity to DTO and return
     return taskMapper.toDTO(updatedTask);
 }
-
-
 
 //    public void deleteTask(Long id) {
 //        taskRepository.findById(id).map(task -> {
