@@ -1,13 +1,16 @@
 package com.sails.client_connect.mapper;
 
-import com.sails.client_connect.dto.RoleDto;
+
+
+import com.sails.client_connect.dto.RoleDTO;
 import com.sails.client_connect.entity.Role;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
 
-    Role toEntity(RoleDto roleDTO);
+    Role toEntity(RoleDTO roleDTO);
 
-    RoleDto toDto(Role role);
+    RoleDTO toDto(Role role);
 }
+ 

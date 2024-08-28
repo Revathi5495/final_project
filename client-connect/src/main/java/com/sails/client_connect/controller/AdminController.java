@@ -1,16 +1,21 @@
 package com.sails.client_connect.controller;
 
-import com.sails.client_connect.dto.*;
+
+
+import com.sails.client_connect.dto.RoleDTO;
+import com.sails.client_connect.dto.RoleUpdateDto;
+import com.sails.client_connect.dto.UserAuth;
+import com.sails.client_connect.dto.UserRoleUpdateDto;
 import com.sails.client_connect.service.RoleService;
-import com.sails.client_connect.service.TaskService;
 import com.sails.client_connect.service.UserService;
-import com.sails.client_connect.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.relation.RoleNotFoundException;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,35 +23,10 @@ import java.util.List;
 public class AdminController {
 
     private final UserService userService;
+
     private final RoleService roleService;
-    private final CustomerService customerService;
-    private final TaskService taskService;
 
-    @GetMapping("/users")
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<UserDto> users = userService.findAllUsers();
-        return ResponseEntity.ok(users);
-    }
-
-    @GetMapping("/customers")
-    public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
-        List<CustomerDTO> customers = customerService.getAllCustomers();
-        return ResponseEntity.ok(customers);
-    }
-
-    @GetMapping("/tasks")
-    public ResponseEntity<List<TaskDTO>> getAllTasksToAdminView() {
-        List<TaskDTO> tasks = taskService.getAllTasksToAdminView();
-        return ResponseEntity.ok(tasks);
-    }
-
-    @GetMapping("/customers/names")
-    public ResponseEntity<List<CustomersFinancingDto>> getCustomersNames() {
-        List<CustomersFinancingDto> customers = customerService.getCustomersNames();
-        return ResponseEntity.ok(customers);
-    }
-
-    @PostMapping("admin/adduser")
+    @PostMapping("/adduser")
     public ResponseEntity<String> addUser(@RequestBody UserAuth userAuth){
         try{
             userService.saveUser(userAuth);
@@ -57,34 +37,32 @@ public class AdminController {
         }
     }
     @PostMapping("role/addRole")
-    public ResponseEntity<RoleDto> addRole(@RequestBody RoleDto roleDTO) {
-        System.out.println("Role accessed successfully:");
-        RoleDto createdRole = roleService.createRole(roleDTO);
-        System.out.println("Role created successfully:");
+    public ResponseEntity<RoleDTO> addRole(@RequestBody RoleDTO roleDTO) {
+        RoleDTO createdRole = roleService.createRole(roleDTO);
         return new ResponseEntity<>(createdRole, HttpStatus.CREATED);
     }
 
-    @PutMapping("role/{id}")
-    public ResponseEntity<RoleDto> updateRole(@PathVariable Long id, @RequestBody RoleDto roleDTO) {
-        RoleDto updatedRole = roleService.updateRole(id, roleDTO);
-        return ResponseEntity.ok(updatedRole);
+    @PutMapping("/{userId}/roles")
+    public ResponseEntity<UserRoleUpdateDto> updateUserRoles(@PathVariable int userId, @RequestBody Set<RoleUpdateDto> roleUpdateDtos) {
+        UserRoleUpdateDto updatedUser = roleService.updateUserRoles(userId, roleUpdateDtos);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
-//    @DeleteMapping("role/delete/{id}")
-//    public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
-//        roleService.deleteRole(id);
-//        return ResponseEntity.noContent().build();
-//    }
+    @DeleteMapping("role/delete/{id}")
+    public ResponseEntity<Void> deleteRole(@PathVariable Long id) throws RoleNotFoundException {
+        roleService.deleteRole(id);
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping("role/{id}")
-    public ResponseEntity<RoleDto> getRoleById(@PathVariable Long id) {
-        RoleDto roleDTO = roleService.getRoleById(id);
+    public ResponseEntity<RoleDTO> getRoleById(@PathVariable Long id) throws RoleNotFoundException {
+        RoleDTO roleDTO = roleService.getRoleById(id);
         return ResponseEntity.ok(roleDTO);
     }
 
     @GetMapping("/roles")
-    public ResponseEntity<List<RoleDto>> getAllRoles() {
-        List<RoleDto> roles = roleService.getAllRoles();
+    public ResponseEntity<List<RoleDTO>> getAllRoles() {
+        List<RoleDTO> roles = roleService.getAllRoles();
         return ResponseEntity.ok(roles);
     }
 }
