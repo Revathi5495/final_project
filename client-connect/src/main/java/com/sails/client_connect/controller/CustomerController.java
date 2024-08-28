@@ -5,6 +5,7 @@ import com.sails.client_connect.response.ApiResponse;
 import com.sails.client_connect.service.CustomerService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -16,24 +17,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user/customers")
+@RequiredArgsConstructor
 public class CustomerController {
 
     private final CustomerService customerService;
 
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
-    }
-
-    //    @PostMapping("/create-customer")
-//    public ResponseEntity<ApiResponse<CustomerDTO>> createCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
-//        CustomerDTO createdCustomer = customerService.createCustomer(customerDTO);
-//        ApiResponse<CustomerDTO> response = new ApiResponse<>(
-//                "Customer created successfully",
-//                HttpStatus.CREATED,
-//                createdCustomer
-//        );
-//        return new ResponseEntity<>(response, HttpStatus.CREATED);
-//    }
     @PostMapping("/create-customer")
     public ResponseEntity<ApiResponse<CustomerDTO>> createCustomer(
             @Valid @RequestBody CustomerDTO customerDTO,
@@ -103,11 +91,6 @@ public class CustomerController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    //    @GetMapping("/search")
-//    public ResponseEntity<List<CustomerDTO>> searchCustomers(@RequestParam(required = false) String query) {
-//        List<CustomerDTO> customers = customerService.searchCustomers(query != null ? query : "");
-//        return new ResponseEntity<>(customers, HttpStatus.OK);
-//    }
     @GetMapping("/search")
     public ResponseEntity<Page<CustomerDTO>> searchCustomers(
             @RequestParam(required = false) String query,

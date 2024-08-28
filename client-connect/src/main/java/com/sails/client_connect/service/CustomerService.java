@@ -8,6 +8,7 @@ import com.sails.client_connect.exception.UserNotFoundException;
 import com.sails.client_connect.mapper.CustomerMapper;
 import com.sails.client_connect.repository.CustomerRepository;
 import com.sails.client_connect.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,18 +20,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     private final UserRepository userRepository;
-
-    public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper, UserRepository userRepository) {
-        this.customerRepository = customerRepository;
-        this.customerMapper = customerMapper;
-        this.userRepository=userRepository;
-    }
 
     public List<CustomersFinancingDto> getCustomersNames() {
         return customerRepository.findAll().stream()
@@ -112,17 +107,16 @@ public class CustomerService {
         customerRepository.delete(customer);
     }
 
-//    public List<CustomerDTO> searchCustomers(String query) {
-//        List<Customer> customers = customerRepository.searchCustomers(query);
-//        return customers.stream()
-//                .map(customerMapper::toDto)
-//                .collect(Collectors.toList());
-//    }
-
     public Page<CustomerDTO> searchCustomers(String query, int page, int size, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         Pageable pageable = PageRequest.of(page, size);
+
+        // Debugging
+        System.out.println("Query: " + query);
+        System.out.println("Page: " + page + ", Size: " + size);
+        System.out.println("User: " + user.getEmail());
+
         Page<Customer> customerPage = customerRepository.searchCustomersByUser(query, user, pageable);
         return customerPage.map(customerMapper::toDto);
     }
@@ -137,14 +131,14 @@ public class CustomerService {
                 id, firstName, lastName, email, phoneNumber, address, pageable, user);
         return customerPage.map(customerMapper::toDto);
     }
-    private CustomerDTO convertToDTO(Customer customer) {
-        return CustomerDTO.builder()
-                .id(customer.getId())
-                .firstName(customer.getFirstName())
-                .lastName(customer.getLastName())
-                .email(customer.getEmail())
-                .phoneNumber(customer.getPhoneNumber())
-                .address(customer.getAddress())
-                .build();
-    }
+//    private CustomerDTO convertToDTO(Customer customer) {
+//        return CustomerDTO.builder()
+//                .id(customer.getId())
+//                .firstName(customer.getFirstName())
+//                .lastName(customer.getLastName())
+//                .email(customer.getEmail())
+//                .phoneNumber(customer.getPhoneNumber())
+//                .address(customer.getAddress())
+//                .build();
+//    }
 }

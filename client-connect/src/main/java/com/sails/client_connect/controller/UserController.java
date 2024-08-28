@@ -1,6 +1,7 @@
 package com.sails.client_connect.controller;
 
 
+import com.sails.client_connect.config.CustomUserDetails;
 import com.sails.client_connect.dto.UserAuth;
 import com.sails.client_connect.dto.UserAuthRequest;
 import com.sails.client_connect.dto.UserDto;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +30,7 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
 
 
-    @PostMapping("/admin/adduser")
+    @PostMapping("/addusers")
     public ResponseEntity<String> addUser(@RequestBody UserAuth userAuth){
         try{
             userService.saveUser(userAuth);
@@ -82,7 +84,18 @@ public class UserController {
 
 
     @PutMapping("/user/update-password")
-    public ResponseEntity<String> updatePassword(@RequestParam String username, @RequestParam String newPassword) {
+    public ResponseEntity<String> updatePassword(
+            @RequestParam String username,
+            @RequestParam String newPassword,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        String loggedInUsername = customUserDetails.getUsername();
+
+        if (!loggedInUsername.equals(username)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: Invalid token for the requested user.");
+        }
+
+
         userService.updatePassword(username, newPassword);
         return ResponseEntity.ok("Password updated successfully.");
     }

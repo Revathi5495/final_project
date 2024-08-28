@@ -1,58 +1,78 @@
 package com.sails.client_connect.service;
 
-import com.sails.client_connect.dto.RoleDto;
+import com.sails.client_connect.dto.RoleDTO;
+import com.sails.client_connect.dto.RoleUpdateDto;
+import com.sails.client_connect.dto.UserRoleUpdateDto;
 import com.sails.client_connect.entity.Role;
-import com.sails.client_connect.entity.RoleName;
-import com.sails.client_connect.exception.RoleNotFoundException;
+import com.sails.client_connect.entity.User;
 import com.sails.client_connect.mapper.RoleMapper;
+import com.sails.client_connect.mapper.UserMapper;
 import com.sails.client_connect.repository.RoleRepository;
+import com.sails.client_connect.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.management.relation.RoleNotFoundException;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RoleService {
 
+    private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final RoleMapper roleMapper;
+    private final UserMapper userMapper;
 
-    public RoleDto createRole(RoleDto roleDTO) {
+    public RoleDTO createRole(RoleDTO roleDTO) {
         Role role = roleMapper.toEntity(roleDTO);
-        System.out.println("Role created successfully:");
         Role savedRole = roleRepository.save(role);
-        System.out.println("Role created successfully:");
         return roleMapper.toDto(savedRole);
     }
 
-    public RoleDto updateRole(Long id, RoleDto roleDTO) {
-        Role existingRole = roleRepository.findById(id)
-                .orElseThrow(() -> new RoleNotFoundException("Role not found"));
+    public UserRoleUpdateDto updateUserRoles(int userId, Set<RoleUpdateDto> roleUpdateDtos) {
 
-        existingRole.setName(RoleName.valueOf(roleDTO.getName().name()));  // Handling enum conversion
-        System.out.println(" successfully:"+existingRole);
-        Role updatedRole = roleRepository.save(existingRole);
-        return roleMapper.toDto(updatedRole);
+        User user = userRepository.findUserWithRolesById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+
+        Set<Role> roles = roleUpdateDtos.stream()
+                .map(roleDTO -> roleRepository.findByName(roleDTO.getName())
+                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleDTO.getName())))
+                .collect(Collectors.toSet());
+
+        user.setRoles(roles);
+
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toUpdateDto(updatedUser);
     }
 
-    public void deleteRole(Long id) {
-        if (!roleRepository.existsById(id)) {
-            throw new RoleNotFoundException("Role not found");
+    public void deleteRole(Long id) throws RoleNotFoundException {
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role not found with id: " + id));
+
+
+        for (User user : role.getUsers()) {
+            user.getRoles().remove(role);
+            userRepository.save(user);
         }
+
         roleRepository.deleteById(id);
     }
 
-    public RoleDto getRoleById(Long id) {
+    public RoleDTO getRoleById(Long id) throws RoleNotFoundException {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new RoleNotFoundException("Role not found"));
         return roleMapper.toDto(role);
     }
 
-    public List<RoleDto> getAllRoles() {
+    public List<RoleDTO> getAllRoles() {
         return roleRepository.findAll().stream()
                 .map(roleMapper::toDto)
                 .collect(Collectors.toList());
     }
 }
+
