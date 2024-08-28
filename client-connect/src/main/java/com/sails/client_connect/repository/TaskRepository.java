@@ -12,14 +12,16 @@ import java.util.Optional;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task,Long> {
-       List<Task> findByDeletedFalse();
-//    Optional<Task> findByIdAndDeletedFalse(Long id);
-//    public interface TaskRepository extends JpaRepository<Task, Long> {
-        List<Task> findByDeletedFalse(Sort sort);
-        Optional<Task> findByIdAndDeletedFalse(Long id);
-    List<Task> findByDeletedFalseAndPriority(Priority priority);
-    List<Task> findByUserAndDeletedFalse(User user);
-    Optional<Task> findByIdAndUserAndDeletedFalse(Long id, User user);
+//       List<Task> findByDeletedFalse();
+////    Optional<Task> findByIdAndDeletedFalse(Long id);
+////    public interface TaskRepository extends JpaRepository<Task, Long> {
+//        List<Task> findByDeletedFalse(Sort sort);
+//        Optional<Task> findByIdAndDeletedFalse(Long id);
+//    List<Task> findByDeletedFalseAndPriority(Priority priority);
+//    List<Task> findByUserAndDeletedFalse(User user);
+//    Optional<Task> findByIdAndUserAndDeletedFalse(Long id, User user);
+    Optional<Task> findByIdAndUser(Long id, User user);
+    List<Task> findByUser(User user);
 }
 
 

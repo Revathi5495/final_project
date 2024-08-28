@@ -44,8 +44,6 @@ public class Task {
     @Column(name = "recurrence_pattern")
     private RecurrencePattern recurrencePattern;
 
-    private boolean deleted = false;
-
     @Column(name = "created_date")
     private LocalDateTime createdDate;
 

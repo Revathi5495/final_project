@@ -95,11 +95,11 @@ public class AppointmentService {
     public AppointmentDTO createAppointment(AppointmentDTO dto, Long userId) {
         Appointment appointment = mapper.toEntity(dto);
 
-        Customer customer = customerRepository.findById((long) dto.getCustomerId())
+        Customer customer = customerRepository.findById( dto.getCustomerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
         appointment.setCustomer(customer);
-        User user = userRepository.findById(dto.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         appointment.setUser(user);

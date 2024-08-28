@@ -87,8 +87,8 @@ public ResponseEntity<ApiResponse<List<TaskDTO>>> getAllTasks(
         }
         try {
             taskService.deleteTask(id, userId);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                    .body(new ApiResponse<>("Task deleted successfully", HttpStatus.NO_CONTENT, null, null));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ApiResponse<>("Task deleted successfully", HttpStatus.OK, null, null));
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ApiResponse<>("Task not found or not authorized", HttpStatus.NOT_FOUND, null, null));

@@ -45,7 +45,7 @@ public class TaskService {
     public TaskDTO getTaskById(Long id, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        return taskRepository.findByIdAndUserAndDeletedFalse(id, user)
+        return taskRepository.findByIdAndUser(id, user)
                 .map(taskMapper::toDTO)
                 .orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id));
     }
@@ -96,7 +96,7 @@ public class TaskService {
 public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
     User user = userRepository.findById(taskDTO.getUserId())
             .orElseThrow(() -> new UserNotFoundException("User not found"));
-    Task task = taskRepository.findByIdAndUserAndDeletedFalse(id, user)
+    Task task = taskRepository.findByIdAndUser(id, user)
             .orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id));
 
     // Update only non-null fields
@@ -118,13 +118,12 @@ public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
     if (taskDTO.getStatus() != null) {
         task.setStatus(taskDTO.getStatus());
     }
-//    if(taskDTO.getRecurrencePattern()!=null){
-//        task.setRecurrencePattern(taskDTO.getRecurrencePattern());
-//    }
-    try {
-        task.setRecurrencePattern(RecurrencePattern.valueOf(taskDTO.getRecurrencePattern().name()));
-    } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException("Invalid recurrence pattern: " + taskDTO.getRecurrencePattern());
+    if (taskDTO.getRecurrencePattern() != null) {
+        try {
+            task.setRecurrencePattern(RecurrencePattern.valueOf(taskDTO.getRecurrencePattern().name()));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid recurrence pattern: " + taskDTO.getRecurrencePattern());
+        }
     }
     if (taskDTO.getUserId() != null) {
         User assignedTo = userRepository.findById(taskDTO.getUserId())
@@ -157,13 +156,9 @@ public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
     public void deleteTask(Long id, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        taskRepository.findByIdAndUserAndDeletedFalse(id, user)
-                .map(task -> {
-                    task.setDeleted(true); // Soft delete
-                    taskRepository.save(task);
-                    return true;
-                })
+        Task task=taskRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id)); // Throw exception if task not found
+        taskRepository.delete(task);
     }
 
     //    //indira
@@ -253,7 +248,7 @@ public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        List<Task> tasks = taskRepository.findByUserAndDeletedFalse(user);
+        List<Task> tasks = taskRepository.findByUser(user);
 
         // Apply filtering if filterBy and filterValue are provided
         if (filterBy != null && filterValue != null) {

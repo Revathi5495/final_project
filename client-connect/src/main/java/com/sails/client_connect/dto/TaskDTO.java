@@ -42,7 +42,6 @@ public class TaskDTO {
 
     private Long customerId;
 
-    private boolean deleted;
 
     private LocalDateTime createdDate;
 
