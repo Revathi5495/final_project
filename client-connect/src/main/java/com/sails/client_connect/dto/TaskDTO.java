@@ -35,9 +35,10 @@ public class TaskDTO {
     private Status status;
 
     //@NotNull(message = "Recurrence Pattern is required")
-    private String recurrencePattern;
+    private RecurrencePattern recurrencePattern;
 
-    private Long assignedToId;
+//    private Long assignedToId;
+      private Long userId;
 
     private Long customerId;
 

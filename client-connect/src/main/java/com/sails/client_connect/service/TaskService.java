@@ -42,8 +42,10 @@ public class TaskService {
 //    }
 
 
-    public TaskDTO getTaskById(Long id) {
-        return taskRepository.findByIdAndDeletedFalse(id)
+    public TaskDTO getTaskById(Long id, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return taskRepository.findByIdAndUserAndDeletedFalse(id, user)
                 .map(taskMapper::toDTO)
                 .orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id));
     }
@@ -55,14 +57,14 @@ public class TaskService {
 //        Task savedTask = taskRepository.save(task);
 //        return taskMapper.toDTO(savedTask);
 
-        User assignedTo = userRepository.findById(taskDTO.getAssignedToId())
+        User user = userRepository.findById(taskDTO.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Customer customer = customerRepository.findById(taskDTO.getCustomerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
         // Convert DTO to Entity and set additional fields
         Task task = taskMapper.toEntity(taskDTO);
-        task.setAssignedTo(assignedTo);
+        task.setUser(user);
         task.setCustomer(customer);
         task.setCreatedDate(LocalDateTime.now());
         task.setLastUpdatedDate(LocalDateTime.now());
@@ -85,7 +87,9 @@ public class TaskService {
 //                });
 //    }
 public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
-    Task task = taskRepository.findByIdAndDeletedFalse(id)
+    User user = userRepository.findById(taskDTO.getUserId())
+            .orElseThrow(() -> new UserNotFoundException("User not found"));
+    Task task = taskRepository.findByIdAndUserAndDeletedFalse(id, user)
             .orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id));
 
     // Update only non-null fields
@@ -107,13 +111,18 @@ public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
     if (taskDTO.getStatus() != null) {
         task.setStatus(taskDTO.getStatus());
     }
-    if(taskDTO.getRecurrencePattern()!=null){
-        task.setRecurrencePattern(taskDTO.getRecurrencePattern());
+//    if(taskDTO.getRecurrencePattern()!=null){
+//        task.setRecurrencePattern(taskDTO.getRecurrencePattern());
+//    }
+    try {
+        task.setRecurrencePattern(RecurrencePattern.valueOf(taskDTO.getRecurrencePattern().name()));
+    } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException("Invalid recurrence pattern: " + taskDTO.getRecurrencePattern());
     }
-    if (taskDTO.getAssignedToId() != null) {
-        User assignedTo = userRepository.findById(taskDTO.getAssignedToId())
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + taskDTO.getAssignedToId()));
-        task.setAssignedTo(assignedTo);
+    if (taskDTO.getUserId() != null) {
+        User assignedTo = userRepository.findById(taskDTO.getUserId())
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + taskDTO.getUserId()));
+        task.setUser(assignedTo);
     }
     if (taskDTO.getCustomerId() != null) {
         Customer customer = customerRepository.findById(taskDTO.getCustomerId())
@@ -133,12 +142,23 @@ public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
 
 
 
-    public void deleteTask(Long id) {
-        taskRepository.findById(id).map(task -> {
-            task.setDeleted(true); // Soft delete
-            taskRepository.save(task);
-            return true;
-        }).orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id)); // Throw exception if task not found
+//    public void deleteTask(Long id) {
+//        taskRepository.findById(id).map(task -> {
+//            task.setDeleted(true); // Soft delete
+//            taskRepository.save(task);
+//            return true;
+//        }).orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id)); // Throw exception if task not found
+//    }
+    public void deleteTask(Long id, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        taskRepository.findByIdAndUserAndDeletedFalse(id, user)
+                .map(task -> {
+                    task.setDeleted(true); // Soft delete
+                    taskRepository.save(task);
+                    return true;
+                })
+                .orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id)); // Throw exception if task not found
     }
 
     //    //indira
@@ -224,33 +244,24 @@ public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
 //        List<Task> tasks = taskRepository.findByDeletedFalseAndPriority(priority);
 //        return taskMapper.toDTOList(tasks);
 //    }
-public List<TaskDTO> getAllTasks(String sortBy, String filterBy, String filterValue) {
-    List<Task> tasks = taskRepository.findByDeletedFalse();
+    public List<TaskDTO> getAllTasks(Long userId, String sortBy, String filterBy, String filterValue) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-    // Apply filtering if filterBy and filterValue are provided
-    if (filterBy != null && filterValue != null) {
-        tasks = tasks.stream()
-                .filter(task -> filterTask(task, filterBy, filterValue))
-                .collect(Collectors.toList());
+        List<Task> tasks = taskRepository.findByUserAndDeletedFalse(user);
+
+        // Apply filtering if filterBy and filterValue are provided
+        if (filterBy != null && filterValue != null) {
+            tasks = tasks.stream()
+                    .filter(task -> filterTask(task, filterBy, filterValue))
+                    .collect(Collectors.toList());
+        }
+
+        // Apply sorting based on the sortBy parameter
+        tasks = applySorting(tasks, sortBy);
+
+        return taskMapper.toDTOList(tasks);
     }
-
-    // Apply sorting based on the sortBy parameter
-    if ("priorityAsc".equals(sortBy)) {
-        tasks.sort(Comparator.comparingInt(this::mapPriority));
-    } else if ("priorityDesc".equals(sortBy)) {
-        tasks.sort(Comparator.comparingInt(this::mapPriority).reversed());
-    } else if ("dueDateAsc".equals(sortBy)) {
-        tasks.sort(Comparator.comparing(Task::getDueDateTime));
-    } else if ("dueDateDesc".equals(sortBy)) {
-        tasks.sort(Comparator.comparing(Task::getDueDateTime).reversed());
-    } else if ("statusAsc".equals(sortBy)) {
-        tasks.sort(Comparator.comparingInt(this::mapStatus));
-    } else if ("statusDesc".equals(sortBy)) {
-        tasks.sort(Comparator.comparingInt(this::mapStatus).reversed());
-    }
-
-    return taskMapper.toDTOList(tasks);
-}
 
     private boolean filterTask(Task task, String filterBy, String filterValue) {
         switch (filterBy) {
@@ -264,6 +275,23 @@ public List<TaskDTO> getAllTasks(String sortBy, String filterBy, String filterVa
             default:
                 return true;
         }
+    }
+
+    private List<Task> applySorting(List<Task> tasks, String sortBy) {
+        if ("priorityAsc".equals(sortBy)) {
+            tasks.sort(Comparator.comparingInt(this::mapPriority));
+        } else if ("priorityDesc".equals(sortBy)) {
+            tasks.sort(Comparator.comparingInt(this::mapPriority).reversed());
+        } else if ("dueDateAsc".equals(sortBy)) {
+            tasks.sort(Comparator.comparing(Task::getDueDateTime));
+        } else if ("dueDateDesc".equals(sortBy)) {
+            tasks.sort(Comparator.comparing(Task::getDueDateTime).reversed());
+        } else if ("statusAsc".equals(sortBy)) {
+            tasks.sort(Comparator.comparingInt(this::mapStatus));
+        } else if ("statusDesc".equals(sortBy)) {
+            tasks.sort(Comparator.comparingInt(this::mapStatus).reversed());
+        }
+        return tasks;
     }
 
     private int mapPriority(Task task) {

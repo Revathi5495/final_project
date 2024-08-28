@@ -3,6 +3,7 @@ package com.sails.client_connect.service;
 import com.sails.client_connect.dto.CustomerDTO;
 import com.sails.client_connect.entity.Customer;
 import com.sails.client_connect.entity.User;
+import com.sails.client_connect.exception.UserNotFoundException;
 import com.sails.client_connect.mapper.CustomerMapper;
 import com.sails.client_connect.repository.CustomerRepository;
 import com.sails.client_connect.repository.UserRepository;
@@ -39,14 +40,18 @@ public class CustomerService {
         return customerMapper.toDto(savedCustomer);
     }
 
-    public CustomerDTO getCustomerById(Long id) {
-        return customerRepository.findById(id)
+    public CustomerDTO getCustomerByIdAndUserId(Long id,Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return customerRepository.findByIdAndUser(id,user)
                 .map(customerMapper::toDto)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + id));
     }
 
-    public List<CustomerDTO> getAllCustomers() {
-        return customerRepository.findAll().stream()
+    public List<CustomerDTO> getAllCustomersByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return customerRepository.findAllByUser(user).stream()
                 .map(customerMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -85,11 +90,12 @@ public class CustomerService {
     }
 
 
-    public void deleteCustomer(Long id) {
-        if (!customerRepository.existsById(id)) {
-            throw new RuntimeException("Customer not found with id " + id);
-        }
-        customerRepository.deleteById(id);
+    public void deleteCustomer(Long id,Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Customer customer = customerRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new RuntimeException("Customer not found with id " + id + " for user " + userId));
+        customerRepository.delete(customer);
     }
 
 //    public List<CustomerDTO> searchCustomers(String query) {
@@ -99,19 +105,23 @@ public class CustomerService {
 //                .collect(Collectors.toList());
 //    }
 
-    public Page<CustomerDTO> searchCustomers(String query, int page, int size) {
+    public Page<CustomerDTO> searchCustomers(String query, int page, int size, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         Pageable pageable = PageRequest.of(page, size);
-        Page<Customer> customerPage = customerRepository.searchCustomers(query,pageable );
-        return customerPage.map(this::convertToDTO);
+        Page<Customer> customerPage = customerRepository.searchCustomersByUser(query, user, pageable);
+        return customerPage.map(customerMapper::toDto);
     }
-
 
     public Page<CustomerDTO> filterAndSortCustomers(Long id, String firstName, String lastName,
                                                     String email, String phoneNumber, String address,
-                                                    int page, int size, Sort sort) {
+                                                    int page, int size, Sort sort, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Customer> customerPage = customerRepository.filterAndSortCustomers(id, firstName, lastName, email, phoneNumber, address, pageable);
-        return customerPage.map(this::convertToDTO);
+        Page<Customer> customerPage = customerRepository.filterAndSortCustomersByUser(
+                id, firstName, lastName, email, phoneNumber, address, pageable, user);
+        return customerPage.map(customerMapper::toDto);
     }
     private CustomerDTO convertToDTO(Customer customer) {
         return CustomerDTO.builder()

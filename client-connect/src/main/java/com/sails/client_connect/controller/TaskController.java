@@ -7,6 +7,7 @@ import com.sails.client_connect.service.TaskService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,15 +23,25 @@ public class TaskController {
 
     @GetMapping
     public ResponseEntity<List<TaskDTO>> getAllTasks(
+            HttpSession session,
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String filterBy,
             @RequestParam(required = false) String filterValue) {
-        return ResponseEntity.ok(taskService.getAllTasks(sortBy, filterBy, filterValue));
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        List<TaskDTO> tasks = taskService.getAllTasks(userId, sortBy, filterBy, filterValue);
+        return ResponseEntity.ok(tasks);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long id) {
-        TaskDTO taskDTO = taskService.getTaskById(id);
+    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long id, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        TaskDTO taskDTO = taskService.getTaskById(id, userId);
         return ResponseEntity.ok(taskDTO);
     }
 
@@ -38,7 +49,10 @@ public class TaskController {
     @PostMapping("/create")
     public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody TaskDTO taskDTO, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
-        taskDTO.setAssignedToId(userId);
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        taskDTO.setUserId(userId);
         TaskDTO createdTask = taskService.createTask(taskDTO);
         return ResponseEntity.ok(createdTask);
     }
@@ -46,34 +60,30 @@ public class TaskController {
     @PatchMapping("/update/{id}")
     public ResponseEntity<TaskDTO> patchUpdateTask(@PathVariable Long id,@RequestBody TaskDTO taskDTO,HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
-        if (userId != null) {
-            taskDTO.setAssignedToId(userId);
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        taskDTO.setUserId(userId);
         TaskDTO updatedTask = taskService.patchUpdateTask(id, taskDTO);
         return ResponseEntity.ok(updatedTask);
     }
 
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id) throws UserNotFoundException {
-        taskService.deleteTask(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteTask(@PathVariable Long id, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            taskService.deleteTask(id, userId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .body("Task with ID " + id + " has been successfully deleted.");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Task with ID " + id + " not found or you are not authorized to delete this task.");
+        }
     }
-    //indira
-//    @GetMapping("/sortedByPriority")
-//    public List<TaskDTO> getTasksSortedByPriority(@RequestParam(required = false) String sortBy) {
-//        return taskService.getTasksSortedByPriority(sortBy);
-//    }
-//    @GetMapping("/sortedByDueDate")
-//    public List<TaskDTO> getTasksSortedByDueDate(@RequestParam(required = false) String sortBy) {
-//        return taskService.getTasksSortedByDueDate(sortBy);
-//    }
-//    @GetMapping("/sortedByStatus")
-//    public List<TaskDTO> getTasksSortedByStatus(@RequestParam(required = false) String sortBy) {
-//        return taskService.getTasksSortedByStatus(sortBy);
-//    }
-//    @GetMapping("/filterByPriority")
-//    public List<TaskDTO> getTasksByPriority(@RequestParam Priority priority) {
-//        return taskService.getTasksByPriority(priority);
-//    }
+
+
 }

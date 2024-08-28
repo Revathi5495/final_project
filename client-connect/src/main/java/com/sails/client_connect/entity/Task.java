@@ -40,9 +40,9 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    //@Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     @Column(name = "recurrence_pattern")
-    private String recurrencePattern;
+    private RecurrencePattern recurrencePattern;
 
     private boolean deleted = false;
 
@@ -53,8 +53,9 @@ public class Task {
     private LocalDateTime lastUpdatedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_to_id")
-    private User assignedTo;
+    @JoinColumn(name = "user_id")
+//    private User assignedTo;
+      private User user;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")

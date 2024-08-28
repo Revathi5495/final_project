@@ -56,14 +56,16 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
-        CustomerDTO customerDTO = customerService.getCustomerById(id);
+    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id,HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        CustomerDTO customerDTO = customerService.getCustomerByIdAndUserId(id, userId);
         return new ResponseEntity<>(customerDTO, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
-        List<CustomerDTO> customers = customerService.getAllCustomers();
+    public ResponseEntity<List<CustomerDTO>> getAllCustomers(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        List<CustomerDTO> customers = customerService.getAllCustomersByUserId(userId);
         return new ResponseEntity<>(customers, HttpStatus.OK);
     }
 
@@ -75,11 +77,7 @@ public class CustomerController {
 
         // Retrieve the user_id from the session
         Long userId = (Long) session.getAttribute("userId");
-
-         //Set the user_id in the customerDTO
-        if (userId != null) {
-            customerDTO.setUserId(userId);
-        }
+        customerDTO.setUserId(userId);
 
 
         // Update the customer
@@ -94,8 +92,9 @@ public class CustomerController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteCustomer(@PathVariable Long id) {
-        customerService.deleteCustomer(id);
+    public ResponseEntity<ApiResponse<Void>> deleteCustomer(@PathVariable Long id,HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        customerService.deleteCustomer(id, userId);
         ApiResponse<Void> response = new ApiResponse<>(
                 "Customer deleted successfully",
                 HttpStatus.OK,
@@ -113,9 +112,9 @@ public class CustomerController {
     public ResponseEntity<Page<CustomerDTO>> searchCustomers(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        Page<CustomerDTO> customerPage = customerService.searchCustomers(query, page, size);
+            @RequestParam(defaultValue = "10") int size,HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        Page<CustomerDTO> customerPage = customerService.searchCustomers(query, page, size, userId);
         return ResponseEntity.ok(customerPage);
 
     }
@@ -131,10 +130,12 @@ public class CustomerController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "firstName") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir) {
+            @RequestParam(defaultValue = "asc") String sortDir,HttpSession session) {
 
+        Long userId = (Long) session.getAttribute("userId");
         Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
-        Page<CustomerDTO> customerPage = customerService.filterAndSortCustomers(id, firstName, lastName, email, phoneNumber, address, page, size, sort);
+        Page<CustomerDTO> customerPage = customerService.filterAndSortCustomers(
+                id, firstName, lastName, email, phoneNumber, address, page, size, sort, userId);
         return ResponseEntity.ok(customerPage);
     }
 
