@@ -1,6 +1,7 @@
 package com.sails.client_connect.service;
 
 import com.sails.client_connect.dto.CustomerDTO;
+import com.sails.client_connect.dto.CustomersFinancingDto;
 import com.sails.client_connect.entity.Customer;
 import com.sails.client_connect.entity.User;
 import com.sails.client_connect.exception.UserNotFoundException;
@@ -29,6 +30,12 @@ public class CustomerService {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
         this.userRepository=userRepository;
+    }
+
+    public List<CustomersFinancingDto> getCustomersNames() {
+        return customerRepository.findAll().stream()
+                .map(customerMapper::toFinancingDto)
+                .collect(Collectors.toList());
     }
 
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {

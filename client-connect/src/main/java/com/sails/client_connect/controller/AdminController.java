@@ -1,10 +1,6 @@
 package com.sails.client_connect.controller;
 
-import com.sails.client_connect.dto.CustomerDTO;
-import com.sails.client_connect.dto.RoleDto;
-import com.sails.client_connect.dto.TaskDTO;
-import com.sails.client_connect.dto.UserDto;
-import com.sails.client_connect.dto.UserAuth;
+import com.sails.client_connect.dto.*;
 import com.sails.client_connect.service.RoleService;
 import com.sails.client_connect.service.TaskService;
 import com.sails.client_connect.service.UserService;
@@ -44,6 +40,11 @@ public class AdminController {
         return ResponseEntity.ok(tasks);
     }
 
+    @GetMapping("/customers/names")
+    public ResponseEntity<List<CustomersFinancingDto>> getCustomersNames() {
+        List<CustomersFinancingDto> customers = customerService.getCustomersNames();
+        return ResponseEntity.ok(customers);
+    }
 
     @PostMapping("admin/adduser")
     public ResponseEntity<String> addUser(@RequestBody UserAuth userAuth){

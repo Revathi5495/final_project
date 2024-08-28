@@ -1,6 +1,7 @@
 package com.sails.client_connect.mapper;
 
 import com.sails.client_connect.dto.CustomerDTO;
+import com.sails.client_connect.dto.CustomersFinancingDto;
 import com.sails.client_connect.entity.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,4 +14,6 @@ public interface CustomerMapper {
 
     @Mapping(source = "user.user_id", target = "userId")
     CustomerDTO toDto(Customer customer);
+
+    CustomersFinancingDto toFinancingDto(Customer customer);
 }
