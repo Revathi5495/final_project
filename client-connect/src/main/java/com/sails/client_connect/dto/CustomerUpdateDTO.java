@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerDTO {
+public class CustomerUpdateDTO {
 
     private Long id;
 
@@ -37,10 +37,10 @@ public class CustomerDTO {
     @Pattern(regexp = "\\d{10}", message = "Phone number must contain digits only")
     private String phoneNumber;
 
-    private List<TaskDTO> tasks;
+    private List<TaskUpdateDTO> tasks;
 
     private Long userId;
 
-    private List<AppointmentDTO> appointments;
+    private List<AppointmentUpdateDTO> appointments;
 
 }

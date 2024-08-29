@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomersFinancingDto {
+public class CustomersFinancingDTO {
     @NotBlank(message = "First Name is required")
     private String firstName;
 

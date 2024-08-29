@@ -1,6 +1,7 @@
 package com.sails.client_connect.service;
 
 import com.sails.client_connect.dto.TaskDTO;
+import com.sails.client_connect.dto.TaskUpdateDTO;
 import com.sails.client_connect.entity.*;
 import com.sails.client_connect.exception.UserNotFoundException;
 import com.sails.client_connect.mapper.TaskMapper;

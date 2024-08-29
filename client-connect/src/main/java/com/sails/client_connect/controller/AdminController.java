@@ -85,8 +85,8 @@ public class AdminController {
     }
 
     @GetMapping("/customers/names")
-    public ResponseEntity<List<CustomersFinancingDto>> getCustomersNames() {
-        List<CustomersFinancingDto> customers = customerService.getCustomersNames();
+    public ResponseEntity<List<CustomersFinancingDTO>> getCustomersNames() {
+        List<CustomersFinancingDTO> customers = customerService.getCustomersNames();
         return ResponseEntity.ok(customers);
     }
 }

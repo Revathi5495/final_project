@@ -1,7 +1,8 @@
 package com.sails.client_connect.service;
 
 import com.sails.client_connect.dto.CustomerDTO;
-import com.sails.client_connect.dto.CustomersFinancingDto;
+import com.sails.client_connect.dto.CustomerUpdateDTO;
+import com.sails.client_connect.dto.CustomersFinancingDTO;
 import com.sails.client_connect.entity.Customer;
 import com.sails.client_connect.entity.User;
 import com.sails.client_connect.exception.UserNotFoundException;
@@ -18,7 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +35,7 @@ public class CustomerService {
     private final AppointmentMapper appointmentMapper;
     private final TaskMapper taskMapper;
 
-    public List<CustomersFinancingDto> getCustomersNames() {
+    public List<CustomersFinancingDTO> getCustomersNames() {
         return customerRepository.findAll().stream()
                 .map(customerMapper::toFinancingDto)
                 .collect(Collectors.toList());
@@ -50,19 +50,19 @@ public class CustomerService {
         return customerMapper.toDto(savedCustomer);
     }
 
-    public CustomerDTO getCustomerByIdAndUserId(Long id,Long userId) {
+    public CustomerUpdateDTO getCustomerByIdAndUserId(Long id,Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         return customerRepository.findByIdAndUser(id,user)
-                .map(customerMapper::toDto)
+                .map(customerMapper::toUpdateDto)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + id));
     }
 
-    public List<CustomerDTO> getAllCustomersByUserId(Long userId) {
+    public List<CustomerUpdateDTO> getAllCustomersByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         return customerRepository.findAllByUser(user).stream()
-                .map(customerMapper::toDto)
+                .map(customerMapper::toUpdateDto)
                 .collect(Collectors.toList());
     }
 
@@ -118,7 +118,7 @@ public class CustomerService {
         customerRepository.delete(customer);
     }
 
-    public Page<CustomerDTO> searchCustomers(String query, int page, int size, Long userId) {
+    public Page<CustomerUpdateDTO> searchCustomers(String query, int page, int size, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         Pageable pageable = PageRequest.of(page, size);
@@ -129,10 +129,10 @@ public class CustomerService {
         System.out.println("User: " + user.getEmail());
 
         Page<Customer> customerPage = customerRepository.searchCustomersByUser(query, user, pageable);
-        return customerPage.map(customerMapper::toDto);
+        return customerPage.map(customerMapper::toUpdateDto);
     }
 
-    public Page<CustomerDTO> filterAndSortCustomers(Long id, String firstName, String lastName,
+    public Page<CustomerUpdateDTO> filterAndSortCustomers(Long id, String firstName, String lastName,
                                                     String email, String phoneNumber, String address,
                                                     int page, int size, Sort sort, Long userId) {
         User user = userRepository.findById(userId)
@@ -140,7 +140,7 @@ public class CustomerService {
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Customer> customerPage = customerRepository.filterAndSortCustomersByUser(
                 id, firstName, lastName, email, phoneNumber, address, pageable, user);
-        return customerPage.map(customerMapper::toDto);
+        return customerPage.map(customerMapper::toUpdateDto);
     }
 //    private CustomerDTO convertToDTO(Customer customer) {
 //        return CustomerDTO.builder()

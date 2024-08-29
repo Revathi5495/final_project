@@ -1,6 +1,7 @@
 package com.sails.client_connect.controller;
 
 import com.sails.client_connect.dto.CustomerDTO;
+import com.sails.client_connect.dto.CustomerUpdateDTO;
 import com.sails.client_connect.response.ApiResponse;
 import com.sails.client_connect.service.CustomerService;
 import jakarta.servlet.http.HttpSession;
@@ -44,16 +45,16 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id,HttpSession session) {
+    public ResponseEntity<CustomerUpdateDTO> getCustomerById(@PathVariable Long id,HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
-        CustomerDTO customerDTO = customerService.getCustomerByIdAndUserId(id, userId);
+        CustomerUpdateDTO customerDTO = customerService.getCustomerByIdAndUserId(id, userId);
         return new ResponseEntity<>(customerDTO, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerDTO>> getAllCustomers(HttpSession session) {
+    public ResponseEntity<List<CustomerUpdateDTO>> getAllCustomers(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
-        List<CustomerDTO> customers = customerService.getAllCustomersByUserId(userId);
+        List<CustomerUpdateDTO> customers = customerService.getAllCustomersByUserId(userId);
         return new ResponseEntity<>(customers, HttpStatus.OK);
     }
 
@@ -92,18 +93,18 @@ public class CustomerController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<CustomerDTO>> searchCustomers(
+    public ResponseEntity<Page<CustomerUpdateDTO>> searchCustomers(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
-        Page<CustomerDTO> customerPage = customerService.searchCustomers(query, page, size, userId);
+        Page<CustomerUpdateDTO> customerPage = customerService.searchCustomers(query, page, size, userId);
         return ResponseEntity.ok(customerPage);
 
     }
 
     @GetMapping("/filter-sort")
-    public ResponseEntity<Page<CustomerDTO>> filterAndSortCustomers(
+    public ResponseEntity<Page<CustomerUpdateDTO>> filterAndSortCustomers(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
@@ -117,7 +118,7 @@ public class CustomerController {
 
         Long userId = (Long) session.getAttribute("userId");
         Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
-        Page<CustomerDTO> customerPage = customerService.filterAndSortCustomers(
+        Page<CustomerUpdateDTO> customerPage = customerService.filterAndSortCustomers(
                 id, firstName, lastName, email, phoneNumber, address, page, size, sort, userId);
         return ResponseEntity.ok(customerPage);
     }
