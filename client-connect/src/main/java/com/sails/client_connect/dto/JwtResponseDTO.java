@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class JwtResponseDto {
+public class JwtResponseDTO {
 
     private String accessToken;
     private String token;
     private String message;
 
-    public JwtResponseDto(String message) {
+    public JwtResponseDTO(String message) {
         this.message = message;
     }
 }

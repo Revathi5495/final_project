@@ -22,7 +22,7 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    @PostMapping("/create-customer")
+    @PostMapping("/create")
     public ResponseEntity<ApiResponse<CustomerDTO>> createCustomer(
             @Valid @RequestBody CustomerDTO customerDTO,
             HttpSession session) {
@@ -57,7 +57,7 @@ public class CustomerController {
         return new ResponseEntity<>(customers, HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/update/{id}")
     public ResponseEntity<ApiResponse<CustomerDTO>> updateCustomer(
             @PathVariable Long id,
             @Valid @RequestBody CustomerDTO customerDTO,
@@ -79,7 +79,7 @@ public class CustomerController {
     }
 
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteCustomer(@PathVariable Long id,HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         customerService.deleteCustomer(id, userId);

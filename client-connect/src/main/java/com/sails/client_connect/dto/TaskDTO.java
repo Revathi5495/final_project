@@ -1,5 +1,6 @@
 package com.sails.client_connect.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sails.client_connect.entity.Priority;
 import com.sails.client_connect.entity.RecurrencePattern;
 import com.sails.client_connect.entity.Status;
@@ -8,11 +9,15 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TaskDTO {
 
     @NotBlank
@@ -36,12 +41,8 @@ public class TaskDTO {
 
     //@NotNull(message = "Recurrence Pattern is required")
     private RecurrencePattern recurrencePattern;
-
-//    private Long assignedToId;
-      private Long userId;
-
+    private Long userId;
     private Long customerId;
-
 
     private LocalDateTime createdDate;
 

@@ -1,18 +1,15 @@
 package com.sails.client_connect.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.Set;
-
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRoleUpdateDto {
-    private int user_id;
+public class OtpRequestDTO {
     private String username;
-    private String email;
-    private Set<RoleUpdateDto> roleNames;
-
+    private String otp;
 }

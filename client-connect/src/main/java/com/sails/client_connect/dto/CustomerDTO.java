@@ -1,16 +1,21 @@
 package com.sails.client_connect.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CustomerDTO {
 
     private Long id;
@@ -33,11 +38,11 @@ public class CustomerDTO {
     @Pattern(regexp = "\\d{10}", message = "Phone number must contain digits only")
     private String phoneNumber;
 
+
     private List<TaskDTO> tasks;
 
     private Long userId;
 
     private List<AppointmentDTO> appointments;
 
-//    private List<LeadDTO> leads;
 }

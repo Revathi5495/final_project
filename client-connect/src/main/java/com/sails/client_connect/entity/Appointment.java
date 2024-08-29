@@ -38,7 +38,8 @@ public class Appointment {
     @Column(name = "attendee")
     private List<String> attendees;
 
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
@@ -46,11 +47,12 @@ public class Appointment {
     @Column(name = "recurrence_pattern")
     private RecurrencePattern recurrencePattern;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
     private Task task;
 
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 }

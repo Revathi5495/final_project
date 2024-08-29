@@ -1,6 +1,7 @@
 package com.sails.client_connect.repository;
 
 
+import com.sails.client_connect.dto.CustomerDTO;
 import com.sails.client_connect.entity.Customer;
 import com.sails.client_connect.entity.User;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,14 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Optional<Customer> findByIdAndUser(Long id, User user);
 
     List<Customer> findAllByUser(User user);
+
+
+//    @Query("SELECT new com.sails.client_connect.dto.CustomerDTO(c.id, c.firstName, c.lastName, c.email, c.address, c.phoneNumber, t.id, a.id) " +
+//            "FROM Customer c " +
+//            "LEFT JOIN c.tasks t " +
+//            "LEFT JOIN c.appointments a " +
+//            "WHERE c.user = :user")
+//    List<CustomerDTO> findAllCustomerDTOByUser(@Param("user") User user);
 
     //Page<Customer> searchCustomersByUser(String query, User user, Pageable pageable);
 
@@ -43,21 +52,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             "c.user = :user")
     Page<Customer> searchCustomersByUser(@Param("query") String query, @Param("user") User user, Pageable pageable);
 
-    // Filter and Sort with Pagination
-//    @Query("SELECT c FROM Customer c WHERE " +
-//            "(:id IS NULL OR c.id = :id) AND " +
-//            "(:firstName IS NULL OR LOWER(c.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))) AND " +
-//            "(:lastName IS NULL OR LOWER(c.lastName) LIKE LOWER(CONCAT('%', :lastName, '%'))) AND " +
-//            "(:email IS NULL OR LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
-//            "(:phoneNumber IS NULL OR c.phoneNumber LIKE CONCAT('%', :phoneNumber, '%')) AND " +
-//            "(:address IS NULL OR LOWER(c.address) LIKE LOWER(CONCAT('%', :address, '%')))")
-//    Page<Customer> filterAndSortCustomers(@Param("id") Long id,
-//                                          @Param("firstName") String firstName,
-//                                          @Param("lastName") String lastName,
-//                                          @Param("email") String email,
-//                                          @Param("phoneNumber") String phoneNumber,
-//                                          @Param("address") String address,
-//                                          Pageable pageable);
     @Query("SELECT c FROM Customer c WHERE " +
             "(:id IS NULL OR c.id = :id) AND " +
             "(:firstName IS NULL OR LOWER(c.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))) AND " +

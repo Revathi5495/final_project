@@ -5,8 +5,12 @@ import com.sails.client_connect.dto.CustomersFinancingDto;
 import com.sails.client_connect.entity.Customer;
 import com.sails.client_connect.entity.User;
 import com.sails.client_connect.exception.UserNotFoundException;
+import com.sails.client_connect.mapper.AppointmentMapper;
 import com.sails.client_connect.mapper.CustomerMapper;
+import com.sails.client_connect.mapper.TaskMapper;
+import com.sails.client_connect.repository.AppointmentRepository;
 import com.sails.client_connect.repository.CustomerRepository;
+import com.sails.client_connect.repository.TaskRepository;
 import com.sails.client_connect.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,6 +30,10 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final AppointmentMapper appointmentMapper;
+    private final TaskMapper taskMapper;
 
     public List<CustomersFinancingDto> getCustomersNames() {
         return customerRepository.findAll().stream()
@@ -57,6 +65,9 @@ public class CustomerService {
                 .map(customerMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+
+
     public List<CustomerDTO> getAllCustomers() {
         return customerRepository.findAll().stream()
                 .map(customerMapper::toDto)

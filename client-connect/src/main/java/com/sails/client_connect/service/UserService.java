@@ -3,11 +3,10 @@ package com.sails.client_connect.service;
 
 
 import com.sails.client_connect.dto.UserAuth;
-import com.sails.client_connect.dto.UserDto;
+import com.sails.client_connect.dto.UserDTO;
 import com.sails.client_connect.entity.Role;
 import com.sails.client_connect.entity.RoleName;
 import com.sails.client_connect.entity.User;
-import com.sails.client_connect.exception.UserNotFoundException;
 import com.sails.client_connect.repository.RoleRepository;
 import com.sails.client_connect.repository.UserRepository;
 import jakarta.mail.MessagingException;
@@ -16,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -69,10 +67,10 @@ public class UserService {
                 "Username: " + user.getUsername() + "\nPassword: " + dummyPassword);
     }
 
-    public List<UserDto> findAllUsers() {
+    public List<UserDTO> findAllUsers() {
 
         return userRepository.findAllWithRoles().stream()
-                .map(user -> new UserDto(
+                .map(user -> new UserDTO(
                         user.getUser_id(),
                         user.getUsername(),
                         user.getEmail(),

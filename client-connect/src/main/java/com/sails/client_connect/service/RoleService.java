@@ -1,8 +1,8 @@
 package com.sails.client_connect.service;
 
 import com.sails.client_connect.dto.RoleDTO;
-import com.sails.client_connect.dto.RoleUpdateDto;
-import com.sails.client_connect.dto.UserRoleUpdateDto;
+import com.sails.client_connect.dto.RoleUpdateDTO;
+import com.sails.client_connect.dto.UserRoleUpdateDTO;
 import com.sails.client_connect.entity.Role;
 import com.sails.client_connect.entity.User;
 import com.sails.client_connect.mapper.RoleMapper;
@@ -32,7 +32,7 @@ public class RoleService {
         return roleMapper.toDto(savedRole);
     }
 
-    public UserRoleUpdateDto updateUserRoles(int userId, Set<RoleUpdateDto> roleUpdateDtos) {
+    public UserRoleUpdateDTO updateUserRoles(int userId, Set<RoleUpdateDTO> roleUpdateDtos) {
 
         User user = userRepository.findUserWithRolesById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));

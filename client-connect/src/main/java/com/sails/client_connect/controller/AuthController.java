@@ -1,13 +1,14 @@
 package com.sails.client_connect.controller;
 
 
-import com.sails.client_connect.dto.JwtResponseDto;
-import com.sails.client_connect.dto.OtpRequestDto;
+import com.sails.client_connect.dto.JwtResponseDTO;
+import com.sails.client_connect.dto.OtpRequestDTO;
 import com.sails.client_connect.dto.RefreshTokenRequest;
 import com.sails.client_connect.dto.UserAuthRequest;
 import com.sails.client_connect.entity.RefreshToken;
 import com.sails.client_connect.entity.User;
 import com.sails.client_connect.service.*;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,7 @@ public class AuthController {
 
         String otp = otpService.generateOtp();
         otpStore.put(userAuthRequest.getUsername(), otp);
-        otpExpiryStore.put(userAuthRequest.getUsername(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1));
+        otpExpiryStore.put(userAuthRequest.getUsername(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5));
 
         User user = userService.findByUsername(userAuthRequest.getUsername());
         emailService.sendOtp(user.getEmail(), otp);
@@ -61,25 +62,43 @@ public class AuthController {
         return ResponseEntity.ok("OTP has been sent to your email.");
     }
 
+    @PostMapping("/authenticate")
+    public String authenticateAndGetToken(@RequestBody UserAuthRequest userAuthRequest, HttpSession session) {
+        Authentication authenticate = authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(userAuthRequest.getUsername(), userAuthRequest.getPassword()));
+
+        if(authenticate.isAuthenticated()) {
+            // Get the authenticated user
+            User authenticatedUser = userService.findByUsername(userAuthRequest.getUsername());
+
+            // Store user ID in session
+            session.setAttribute("userId", authenticatedUser.getUser_id());
+            return jwtService.generateToken(userAuthRequest.getUsername());
+        }
+        else{
+            throw new UsernameNotFoundException("invalid user request !");
+        }
+
+    }
+
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<JwtResponseDto> verifyOtp(@RequestBody OtpRequestDto otpRequestDto) {
+    public ResponseEntity<JwtResponseDTO> verifyOtp(@RequestBody OtpRequestDTO otpRequestDto) {
 
         if (!otpStore.containsKey(otpRequestDto.getUsername())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JwtResponseDto("OTP not found for this user."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JwtResponseDTO("OTP not found for this user."));
         }
 
         Long expiryTime = otpExpiryStore.get(otpRequestDto.getUsername());
         if (expiryTime < System.currentTimeMillis()) {
             otpStore.remove(otpRequestDto.getUsername());
             otpExpiryStore.remove(otpRequestDto.getUsername());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JwtResponseDto("OTP has expired."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JwtResponseDTO("OTP has expired."));
         }
 
 
         String storedOtp = otpStore.get(otpRequestDto.getUsername());
         if (!storedOtp.equals(otpRequestDto.getOtp())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponseDto("Invalid OTP."));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponseDTO("Invalid OTP."));
         }
 
         otpStore.remove(otpRequestDto.getUsername());
@@ -88,7 +107,7 @@ public class AuthController {
         String jwt = jwtService.generateToken(otpRequestDto.getUsername());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(otpRequestDto.getUsername());
 
-        JwtResponseDto responseDto = JwtResponseDto.builder()
+        JwtResponseDTO responseDto = JwtResponseDTO.builder()
                                                     .accessToken(jwt)
                                                     .token(refreshToken.getToken())
                                                     .build();
@@ -98,7 +117,7 @@ public class AuthController {
 
 
     @PostMapping("/refreshToken")
-    public ResponseEntity<JwtResponseDto> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+    public ResponseEntity<JwtResponseDTO> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         return refreshTokenService.findByToken(refreshTokenRequest.getToken())
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
@@ -107,7 +126,7 @@ public class AuthController {
                     //generate a new token with username
                     String accessToken = jwtService.generateToken(user.getUsername());
 
-                    JwtResponseDto responseDto = JwtResponseDto.builder()
+                    JwtResponseDTO responseDto = JwtResponseDTO.builder()
                             .accessToken(accessToken)
                             .token(refreshTokenRequest.getToken())
                             .build();
