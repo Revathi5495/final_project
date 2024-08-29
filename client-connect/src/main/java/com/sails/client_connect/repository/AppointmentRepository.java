@@ -2,6 +2,8 @@ package com.sails.client_connect.repository;
 
 import com.sails.client_connect.dto.AppointmentDTO;
 import com.sails.client_connect.entity.Appointment;
+import com.sails.client_connect.entity.Lead;
+import com.sails.client_connect.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,7 +40,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
                                                       @Param("endDateTime") LocalDateTime endDateTime,
                                                       Pageable pageable, @Param("userId") Long userId);
 
-
+    List<Appointment> findAllByUser(User user);
 
 
 }

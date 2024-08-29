@@ -1,7 +1,6 @@
 // AppointmentDTO.java
 package com.sails.client_connect.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sails.client_connect.entity.RecurrencePattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
