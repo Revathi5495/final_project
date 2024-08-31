@@ -1,6 +1,7 @@
 package com.sails.client_connect.controller;
 
 import com.sails.client_connect.dto.AppointmentDTO;
+import com.sails.client_connect.dto.LeadDTO;
 import com.sails.client_connect.response.ApiResponse;
 import com.sails.client_connect.service.AppointmentService;
 import jakarta.servlet.http.HttpSession;

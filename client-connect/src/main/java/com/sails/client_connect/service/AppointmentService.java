@@ -96,9 +96,16 @@ public class AppointmentService {
         return mapper.toDto(appointment);
     }
 
+//    public List<AppointmentDTO> getAllAppointments(Long userId) {
+//        return appointmentRepository.findAll().stream()
+//                .filter(appointment -> appointment.getUser().getUser_id().equals(userId))
+//                .map(mapper::toDto)
+//                .collect(Collectors.toList());
+//    }
     public List<AppointmentDTO> getAllAppointments(Long userId) {
-        return appointmentRepository.findAll().stream()
-                .filter(appointment -> appointment.getUser().getUser_id().equals(userId))
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return appointmentRepository.findAllByUser(user).stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
