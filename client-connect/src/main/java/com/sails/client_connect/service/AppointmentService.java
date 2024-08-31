@@ -37,7 +37,7 @@ public class AppointmentService {
     public AppointmentDTO createAppointment(AppointmentDTO dto, Long userId) {
         Appointment appointment = mapper.toEntity(dto);
 
-        Customer customer = customerRepository.findById( dto.getCustomerId())
+        Customer customer = customerRepository.findById(dto.getCustomerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
         appointment.setCustomer(customer);
@@ -96,12 +96,6 @@ public class AppointmentService {
         return mapper.toDto(appointment);
     }
 
-//    public List<AppointmentDTO> getAllAppointments(Long userId) {
-//        return appointmentRepository.findAll().stream()
-//                .filter(appointment -> appointment.getUser().getUser_id().equals(userId))
-//                .map(mapper::toDto)
-//                .collect(Collectors.toList());
-//    }
     public List<AppointmentDTO> getAllAppointments(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -109,6 +103,7 @@ public class AppointmentService {
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
+
     public Page<AppointmentDTO> searchAppointments(String query, int page, int size, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
