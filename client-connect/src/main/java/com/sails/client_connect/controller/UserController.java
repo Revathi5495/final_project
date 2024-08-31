@@ -35,7 +35,7 @@ public class UserController {
 
 
 
-    @PutMapping("/user/update-password")
+    @PutMapping("/update-password")
     public ResponseEntity<String> updatePassword(
             @RequestParam String username,
             @RequestParam String newPassword,

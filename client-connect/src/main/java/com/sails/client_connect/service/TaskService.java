@@ -1,8 +1,8 @@
 package com.sails.client_connect.service;
 
 import com.sails.client_connect.dto.TaskDTO;
-import com.sails.client_connect.dto.TaskUpdateDTO;
 import com.sails.client_connect.entity.*;
+import com.sails.client_connect.exception.ResourceNotFoundException;
 import com.sails.client_connect.exception.UserNotFoundException;
 import com.sails.client_connect.mapper.TaskMapper;
 import com.sails.client_connect.repository.CustomerRepository;
@@ -14,10 +14,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.time.LocalDateTime;
 
 
 @Service

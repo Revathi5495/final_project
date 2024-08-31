@@ -7,6 +7,7 @@ import com.sails.client_connect.service.CustomerService;
 import com.sails.client_connect.service.RoleService;
 import com.sails.client_connect.service.TaskService;
 import com.sails.client_connect.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class AdminController {
     private final RoleService roleService;
 
     @PostMapping("/adduser")
-    public ResponseEntity<String> addUser(@RequestBody UserAuth userAuth){
+    public ResponseEntity<String> addUser(@Valid @RequestBody UserAuth userAuth){
         try{
             userService.saveUser(userAuth);
             return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully" );
@@ -37,7 +38,7 @@ public class AdminController {
         }
     }
     @PostMapping("/role/addRole")
-    public ResponseEntity<RoleDTO> addRole(@RequestBody RoleDTO roleDTO) {
+    public ResponseEntity<RoleDTO> addRole(@Valid @RequestBody RoleDTO roleDTO) {
         RoleDTO createdRole = roleService.createRole(roleDTO);
         return new ResponseEntity<>(createdRole, HttpStatus.CREATED);
     }

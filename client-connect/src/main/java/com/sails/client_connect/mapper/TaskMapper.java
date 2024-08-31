@@ -1,9 +1,9 @@
 package com.sails.client_connect.mapper;
 
 import com.sails.client_connect.dto.TaskDTO;
-import com.sails.client_connect.dto.TaskUpdateDTO;
 import com.sails.client_connect.entity.Task;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
@@ -22,8 +22,6 @@ public interface TaskMapper {
     @Mapping(source = "customerId", target = "customer.id")
     Task toEntity(TaskDTO taskDTO);
 
-
-    List<TaskUpdateDTO> toUpdateDTOList(List<Task> taskList);
 
 }
 

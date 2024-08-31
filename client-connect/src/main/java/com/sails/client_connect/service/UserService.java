@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -57,6 +58,7 @@ public class UserService {
                 .collect(Collectors.toSet());
 
         user.setRoles(roles);
+        user.setPasswordLastSet(LocalDateTime.now());
 
 
         userRepository.save(user);
@@ -89,6 +91,7 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPasswordLastSet(LocalDateTime.now());
         userRepository.save(user);
     }
 

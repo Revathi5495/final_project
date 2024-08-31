@@ -64,7 +64,7 @@ public class LeadController {
     @PatchMapping("/update/{id}")
     public ResponseEntity<ApiResponse<LeadDTO>> updateLead(
             @PathVariable Long id,
-            @Valid @RequestBody LeadDTO leadDTO,
+            @RequestBody LeadDTO leadDTO,
             HttpSession session) {
 
         // Retrieve the user_id from the session

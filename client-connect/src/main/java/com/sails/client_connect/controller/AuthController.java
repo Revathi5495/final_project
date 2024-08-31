@@ -1,14 +1,12 @@
 package com.sails.client_connect.controller;
 
 
-import com.sails.client_connect.dto.JwtResponseDTO;
-import com.sails.client_connect.dto.OtpRequestDTO;
-import com.sails.client_connect.dto.RefreshTokenRequest;
-import com.sails.client_connect.dto.UserAuthRequest;
+import com.sails.client_connect.dto.*;
 import com.sails.client_connect.entity.RefreshToken;
 import com.sails.client_connect.entity.User;
 import com.sails.client_connect.service.*;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +36,7 @@ public class AuthController {
     private Map<String, Long> otpExpiryStore = new HashMap<>();
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserAuthRequest userAuthRequest) {
+    public ResponseEntity<String> login(@Valid @RequestBody UserAuthRequest userAuthRequest) {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         userAuthRequest.getUsername(),
@@ -63,7 +59,7 @@ public class AuthController {
     }
 
     @PostMapping("/authenticate")
-    public String authenticateAndGetToken(@RequestBody UserAuthRequest userAuthRequest, HttpSession session) {
+    public String authenticateAndGetToken(@Valid @RequestBody UserAuthRequest userAuthRequest, HttpSession session) {
         Authentication authenticate = authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(userAuthRequest.getUsername(), userAuthRequest.getPassword()));
 
         if(authenticate.isAuthenticated()) {
@@ -82,7 +78,7 @@ public class AuthController {
 
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<JwtResponseDTO> verifyOtp(@RequestBody OtpRequestDTO otpRequestDto) {
+    public ResponseEntity<JwtResponseDTO> verifyOtp(@Valid @RequestBody OtpRequestDTO otpRequestDto) {
 
         if (!otpStore.containsKey(otpRequestDto.getUsername())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JwtResponseDTO("OTP not found for this user."));
@@ -109,7 +105,8 @@ public class AuthController {
 
         JwtResponseDTO responseDto = JwtResponseDTO.builder()
                                                     .accessToken(jwt)
-                                                    .token(refreshToken.getToken())
+                                                    .refreshToken(refreshToken.getToken())
+                                                    .message("Access Token and Refresh Token are created")
                                                     .build();
 
         return ResponseEntity.ok(responseDto);
@@ -117,7 +114,7 @@ public class AuthController {
 
 
     @PostMapping("/refreshToken")
-    public ResponseEntity<JwtResponseDTO> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+    public ResponseEntity<JwtResponseDTO> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
         return refreshTokenService.findByToken(refreshTokenRequest.getToken())
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
@@ -128,12 +125,29 @@ public class AuthController {
 
                     JwtResponseDTO responseDto = JwtResponseDTO.builder()
                             .accessToken(accessToken)
-                            .token(refreshTokenRequest.getToken())
+                            .refreshToken(refreshTokenRequest.getToken())
+                            .message("New Access Token and Refresh Token are created.")
                             .build();
 
                     return ResponseEntity.ok(responseDto);
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
+    }
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestParam String username, @RequestParam String newPassword) {
+        userService.updatePassword(username, newPassword);
+        return ResponseEntity.ok("Password changed successfully");
+    }
+
+    @PostMapping("/adduser")
+    public ResponseEntity<String> addUser(@Valid @RequestBody UserAuth userAuth){
+        try{
+            userService.saveUser(userAuth);
+            return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully" );
+        }
+        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
 

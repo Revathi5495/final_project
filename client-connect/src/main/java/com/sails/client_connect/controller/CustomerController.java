@@ -7,7 +7,6 @@ import com.sails.client_connect.service.CustomerService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -61,7 +60,7 @@ public class CustomerController {
     @PatchMapping("/update/{id}")
     public ResponseEntity<ApiResponse<CustomerDTO>> updateCustomer(
             @PathVariable Long id,
-            @Valid @RequestBody CustomerDTO customerDTO,
+            @RequestBody CustomerDTO customerDTO,
             HttpSession session) {
 
         // Retrieve the user_id from the session

@@ -26,7 +26,7 @@ public class CustomerUpdateDTO {
     private String lastName;
 
     @NotBlank(message = "Email is required")
-    @Email
+    @Email(message = "Invalid email format")
     private String email;
 
     @NotBlank(message = "Address is required")

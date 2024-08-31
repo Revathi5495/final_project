@@ -6,7 +6,6 @@ import com.sails.client_connect.service.AppointmentService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -23,15 +22,15 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
 
-@PostMapping("/create")
-public ResponseEntity<ApiResponse<AppointmentDTO>> createAppointment(
-        @Valid @RequestBody AppointmentDTO appointmentDTO, HttpSession session) {
-    Long userId = (Long) session.getAttribute("userId");
-    appointmentDTO.setUserId(userId);
-    AppointmentDTO createdAppointment = appointmentService.createAppointment(appointmentDTO, userId);
-    return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new ApiResponse<>("Appointment created successfully", HttpStatus.CREATED, createdAppointment));
-}
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<AppointmentDTO>> createAppointment(
+            @Valid @RequestBody AppointmentDTO appointmentDTO, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        appointmentDTO.setUserId(userId);
+        AppointmentDTO createdAppointment = appointmentService.createAppointment(appointmentDTO, userId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>("Appointment created successfully", HttpStatus.CREATED, createdAppointment));
+    }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<ApiResponse<AppointmentDTO>> updateAppointment(

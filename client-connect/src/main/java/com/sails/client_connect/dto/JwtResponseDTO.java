@@ -12,10 +12,11 @@ import lombok.NoArgsConstructor;
 public class JwtResponseDTO {
 
     private String accessToken;
-    private String token;
+    private String refreshToken;
     private String message;
 
     public JwtResponseDTO(String message) {
         this.message = message;
     }
+
 }

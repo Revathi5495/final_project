@@ -3,7 +3,6 @@ package com.sails.client_connect.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,15 +25,14 @@ public class CustomerDTO {
     private String lastName;
 
     @NotBlank(message = "Email is required")
-    @Email
+    @Email(message = "Invalid Email format")
     private String email;
 
     @NotBlank(message = "Address is required")
     private String address;
 
     @NotBlank(message = "Phone number is required")
-    @Size(min = 10, max = 10, message = "Phone number must be 10 digits")
-    @Pattern(regexp = "\\d{10}", message = "Phone number must contain digits only")
+    @Pattern(regexp = "^\\d{10}$", message = "Phone number must be exactly 10 digits and contain digits only")
     private String phoneNumber;
 
     private List<TaskDTO> tasks;

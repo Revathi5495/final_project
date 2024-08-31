@@ -1,6 +1,5 @@
 package com.sails.client_connect.repository;
 
-import com.sails.client_connect.dto.TaskDTO;
 import com.sails.client_connect.entity.Priority;
 import com.sails.client_connect.entity.Status;
 import com.sails.client_connect.entity.Task;

@@ -1,7 +1,6 @@
 package com.sails.client_connect.controller;
 
 import com.sails.client_connect.dto.TaskDTO;
-import com.sails.client_connect.dto.TaskUpdateDTO;
 import com.sails.client_connect.exception.UserNotFoundException;
 import com.sails.client_connect.response.ApiResponse;
 import com.sails.client_connect.service.TaskService;
@@ -24,6 +23,7 @@ public class TaskController {
 
     private final TaskService taskService;
 
+    //Get all tasks for the currently logged-in user, with optional sorting and filtering.
     @GetMapping
     public ResponseEntity<ApiResponse<List<TaskDTO>>> getAllTasks(
             HttpSession session,
@@ -39,6 +39,7 @@ public class TaskController {
         return ResponseEntity.ok(new ApiResponse<>("Tasks retrieved successfully", HttpStatus.OK, tasks));
     }
 
+    //Get Specific Task by Id
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<TaskDTO>> getTaskById(@PathVariable Long id, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");

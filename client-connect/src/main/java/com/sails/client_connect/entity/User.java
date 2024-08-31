@@ -44,8 +44,12 @@
 package com.sails.client_connect.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,7 +64,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long user_id;
+    @Column(unique = true, nullable = false)
     private String username;
+    @Column(unique = true, nullable = false)
     private String email;
     private String password;
 
@@ -84,5 +90,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Customer> customers;
+
+    private LocalDateTime passwordLastSet;
 
 }
