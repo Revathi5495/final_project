@@ -24,9 +24,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
 
+    /**
+     *
+     * @param http
+     * Verifies the Roles assigned to the api requests and gives permissions
+     * adds jwt filter with the username used while login
+     * @return
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -48,19 +56,23 @@ public class SecurityConfig {
 
     }
 
+    /**
+     * Encodes the password
+     * @return Encoded password
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        authenticationProvider.setUserDetailsService(customUserDetailsService); //fetches the user details from database
+        authenticationProvider.setPasswordEncoder(passwordEncoder()); //checks if password given and in database are same
         return authenticationProvider;
     }
-
 
 
     @Bean

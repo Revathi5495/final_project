@@ -16,6 +16,11 @@ public class CustomUserDetails implements UserDetails {
 
     private final User user;
 
+    /**
+     * Fetching the roles enum from database
+     * Converting each role to String And mapping them
+     * @return Set of Roles
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getRoles().stream()
@@ -23,11 +28,19 @@ public class CustomUserDetails implements UserDetails {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Fetching the password from database
+     * @return password
+     */
     @Override
     public String getPassword() {
         return user.getPassword();
     }
 
+    /**
+     * Fetching the username from database
+     * @return username
+     */
     @Override
     public String getUsername() {
         return user.getUsername();

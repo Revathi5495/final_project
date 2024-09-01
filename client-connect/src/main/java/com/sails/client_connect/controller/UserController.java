@@ -23,6 +23,10 @@ public class UserController {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    /**
+     * User can see all the users in the system
+     * @return List of users
+     */
     @GetMapping("/all")
     public List<UserDTO> getAllUsers() {
         return userService.findAllUsers();
@@ -33,8 +37,15 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-
-
+    /**
+     *
+     * @param username
+     * @param newPassword
+     * @param customUserDetails
+     * Checks if the user accessing and username in request are same
+     * If authenticated then that specific User can update his password
+     * @return Response message according to conditions
+     */
     @PutMapping("/update-password")
     public ResponseEntity<String> updatePassword(
             @RequestParam String username,
@@ -43,6 +54,7 @@ public class UserController {
 
         String loggedInUsername = customUserDetails.getUsername();
 
+        //Checks if the authenticated user and user sending request are same
         if (!loggedInUsername.equals(username)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: Invalid token for the requested user.");
         }

@@ -1,7 +1,5 @@
 package com.sails.client_connect.service;
 
-
-
 import com.sails.client_connect.dto.UserAuth;
 import com.sails.client_connect.dto.UserDTO;
 import com.sails.client_connect.entity.Role;
@@ -29,13 +27,18 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
-
+    /**
+     *
+     * @param userAuth
+     * Check if Admin is already present in database if not only then add Admin
+     * Create a User object and set the details in it
+     * Save the user in database and send the required details to email service
+     * @throws MessagingException
+     */
     public void saveUser(UserAuth userAuth) throws MessagingException {
 
-
+        //checks if a admin already present in database
         if (userAuth.getRoleNames().contains(RoleName.ADMIN)) {
-
-
             if (userRepository.findByRoles_Name(RoleName.ADMIN).isPresent()) {
                 throw new IllegalStateException("An admin already exists. Cannot add another admin.");
             }
@@ -51,7 +54,6 @@ public class UserService {
         user.setEmail(userAuth.getEmail());
         user.setPassword(encodedPassword);
 
-
         Set<Role> roles = userAuth.getRoleNames().stream()
                 .map(roleName -> roleRepository.findByName(roleName)
                         .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
@@ -63,12 +65,17 @@ public class UserService {
 
         userRepository.save(user);
 
+        //send the details required to send email
         emailService.sendDynamicEmail(fromEmail,
                 user.getEmail(),
                 "Your Account Credentials",
                 "Username: " + user.getUsername() + "\nPassword: " + dummyPassword);
     }
 
+    /**
+     * Fetch all the users from the database
+     * @return List of users
+     */
     public List<UserDTO> findAllUsers() {
 
         return userRepository.findAllWithRoles().stream()
@@ -81,12 +88,23 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     *
+     * @param username
+     * Fetch the user details using username
+     * @return User details that are fetched
+     */
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
     }
 
-
+    /**
+     *
+     * @param username
+     * @param newPassword
+     * Check if username is present in database and update the password
+     */
     public void updatePassword(String username, String newPassword) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));

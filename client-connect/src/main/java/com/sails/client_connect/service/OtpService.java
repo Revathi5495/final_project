@@ -8,6 +8,10 @@ import java.security.SecureRandom;
 public class OtpService {
     private static final int otp_length = 6;
 
+    /**
+     * Generates a random otp with length = 6
+     * @return otp
+     */
     public String generateOtp() {
         SecureRandom random = new SecureRandom();
         StringBuilder otp = new StringBuilder(otp_length);

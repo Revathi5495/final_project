@@ -24,6 +24,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
 
+    /**
+     *
+     * @param request
+     * @param response
+     * @param filterChain
+     * Fetches the token break it using substring to fetch the username from it
+     * Fetches the user details using username and validates the validates that token with the details from database
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
