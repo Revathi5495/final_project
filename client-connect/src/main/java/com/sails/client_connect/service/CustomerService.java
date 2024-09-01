@@ -30,17 +30,24 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     private final UserRepository userRepository;
-    private final TaskRepository taskRepository;
-    private final AppointmentRepository appointmentRepository;
-    private final AppointmentMapper appointmentMapper;
-    private final TaskMapper taskMapper;
 
+    /**
+     * Get a list of customer names for financing purposes.
+     *
+     * @return List of CustomersFinancingDTO objects
+     */
     public List<CustomersFinancingDTO> getCustomersNames() {
         return customerRepository.findAll().stream()
                 .map(customerMapper::toFinancingDto)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Create a new customer.
+     *
+     * @param customerDTO Data Transfer Object containing customer details
+     * @return Created CustomerDTO
+     */
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
         Customer customer = customerMapper.toEntity(customerDTO);
         User user = userRepository.findById(customerDTO.getUserId())
@@ -50,6 +57,14 @@ public class CustomerService {
         return customerMapper.toDto(savedCustomer);
     }
 
+    /**
+     * Retrieve a customer by their ID and associated user ID.
+     *
+     * @param id Customer ID
+     * @param userId User ID
+     * @return CustomerUpdateDTO with customer details
+     * @throws UserNotFoundException if the user is not found
+     */
     public CustomerUpdateDTO getCustomerByIdAndUserId(Long id,Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -58,6 +73,13 @@ public class CustomerService {
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + id));
     }
 
+    /**
+     * Retrieve all customers associated with a specific user ID.
+     *
+     * @param userId User ID
+     * @return List of CustomerUpdateDTO objects
+     * @throws UserNotFoundException if the user is not found
+     */
     public List<CustomerUpdateDTO> getAllCustomersByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -65,9 +87,11 @@ public class CustomerService {
                 .map(customerMapper::toUpdateDto)
                 .collect(Collectors.toList());
     }
-
-
-
+    /**
+     * Retrieve all customers.
+     *
+     * @return List of CustomerDTO objects
+     */
     public List<CustomerDTO> getAllCustomers() {
         return customerRepository.findAll().stream()
                 .map(customerMapper::toDto)
@@ -75,7 +99,13 @@ public class CustomerService {
     }
 
 
-
+    /**
+     * Update customer details.
+     *
+     * @param id Customer ID
+     * @param customerDTO Data Transfer Object containing updated customer details
+     * @return Updated CustomerDTO
+     */
     public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + id));
@@ -109,7 +139,13 @@ public class CustomerService {
         return customerMapper.toDto(updatedCustomer);
     }
 
-
+    /**
+     * Delete a customer by their ID and associated user ID.
+     *
+     * @param id Customer ID
+     * @param userId User ID
+     * @throws UserNotFoundException if the user is not found
+     */
     public void deleteCustomer(Long id,Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -118,6 +154,16 @@ public class CustomerService {
         customerRepository.delete(customer);
     }
 
+    /**
+     * Search for customers based on a query string, paginated.
+     *
+     * @param query Search query
+     * @param page  Page number
+     * @param size  Page size
+     * @param userId User ID
+     * @return Page of CustomerUpdateDTO objects
+     * @throws UserNotFoundException if the user is not found
+     */
     public Page<CustomerUpdateDTO> searchCustomers(String query, int page, int size, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -132,6 +178,22 @@ public class CustomerService {
         return customerPage.map(customerMapper::toUpdateDto);
     }
 
+    /**
+     * Filter and sort customers based on various fields.
+     *
+     * @param id Customer ID
+     * @param firstName First Name
+     * @param lastName Last Name
+     * @param email Email
+     * @param phoneNumber Phone Number
+     * @param address Address
+     * @param page Page number
+     * @param size Page size
+     * @param sort Sorting criteria
+     * @param userId User ID
+     * @return Page of CustomerUpdateDTO objects
+     * @throws UserNotFoundException if the user is not found
+     */
     public Page<CustomerUpdateDTO> filterAndSortCustomers(Long id, String firstName, String lastName,
                                                     String email, String phoneNumber, String address,
                                                     int page, int size, Sort sort, Long userId) {
@@ -142,14 +204,5 @@ public class CustomerService {
                 id, firstName, lastName, email, phoneNumber, address, pageable, user);
         return customerPage.map(customerMapper::toUpdateDto);
     }
-//    private CustomerDTO convertToDTO(Customer customer) {
-//        return CustomerDTO.builder()
-//                .id(customer.getId())
-//                .firstName(customer.getFirstName())
-//                .lastName(customer.getLastName())
-//                .email(customer.getEmail())
-//                .phoneNumber(customer.getPhoneNumber())
-//                .address(customer.getAddress())
-//                .build();
-//    }
+
 }

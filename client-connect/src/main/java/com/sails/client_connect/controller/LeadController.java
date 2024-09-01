@@ -19,7 +19,15 @@ public class LeadController {
 
     private final LeadService leadService;
 
-    @PostMapping("/create")
+    /**
+     * this end point ensures to create lead by the user
+     * @param leadDTO
+     * @param session
+     * Taking User id from the Http session and set that user id in LeadDTO class
+     * leadService.createLead(leadDTO): it inserts the data (abstracted from the response body) with user id into lead table
+     * @return return response with message,status code,and data which is passed in response body
+     */
+    @PostMapping("/create") //this end point ensures to create lead by the user
     public ResponseEntity<ApiResponse<LeadDTO>> createLead(
             @Valid @RequestBody LeadDTO leadDTO,
             HttpSession session) {
@@ -39,6 +47,13 @@ public class LeadController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    /**
+     *
+     * @param id Lead ID
+     * @param session Get User ID from Session
+     * Get specific lead using ID
+     * @return Lead that matches the given ID
+     */
     @GetMapping("/{id}")
     public ResponseEntity<LeadDTO> getLeadById(
             @PathVariable Long id,
@@ -51,6 +66,11 @@ public class LeadController {
         return new ResponseEntity<>(leadDTO, HttpStatus.OK);
     }
 
+    /**
+     * @param session Get User ID from Session
+     * Get all leads for the currently logged-in user
+     * @return List of leads associated with the user
+     */
     @GetMapping
     public ResponseEntity<List<LeadDTO>> getAllLeads(HttpSession session) {
 
@@ -61,6 +81,14 @@ public class LeadController {
         return new ResponseEntity<>(leads, HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param id Lead ID
+     * @param leadDTO Values to update
+     * @param session Get User ID from Session
+     * To update a specific lead using lead ID
+     * @return Updated lead with a success message and HTTP status code
+     */
     @PatchMapping("/update/{id}")
     public ResponseEntity<ApiResponse<LeadDTO>> updateLead(
             @PathVariable Long id,
@@ -80,6 +108,12 @@ public class LeadController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * @param id Lead ID
+     * @param session Get User ID from Session
+     * Delete specific lead using ID
+     * @return Success message indicating the lead was deleted with HTTP status code
+     */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteLead(
             @PathVariable Long id,
@@ -97,3 +131,5 @@ public class LeadController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
+
+

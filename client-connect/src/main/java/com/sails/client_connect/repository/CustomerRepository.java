@@ -16,31 +16,32 @@ import java.util.Optional;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
+    /**
+     * Find a customer by its ID and associated user.
+     *
+     * @param id   Customer ID
+     * @param user Associated User entity
+     * @return Optional containing the Customer if found, otherwise empty
+     */
     Optional<Customer> findByIdAndUser(Long id, User user);
 
+    /**
+     * Find all customers associated with a specific user.
+     *
+     * @param user Associated User entity
+     * @return List of Customer entities
+     */
     List<Customer> findAllByUser(User user);
 
-
-//    @Query("SELECT new com.sails.client_connect.dto.CustomerDTO(c.id, c.firstName, c.lastName, c.email, c.address, c.phoneNumber, t.id, a.id) " +
-//            "FROM Customer c " +
-//            "LEFT JOIN c.tasks t " +
-//            "LEFT JOIN c.appointments a " +
-//            "WHERE c.user = :user")
-//    List<CustomerDTO> findAllCustomerDTOByUser(@Param("user") User user);
-
-    //Page<Customer> searchCustomersByUser(String query, User user, Pageable pageable);
-
-//    Page<Customer> filterAndSortCustomersByUser(
-//            Long id, String firstName, String lastName, String email,
-//            String phoneNumber, String address, Pageable pageable, User user);
-
-    //    @Query("SELECT c FROM Customer c WHERE " +
-//            "c.firstName LIKE %:keyword% OR " +
-//            "c.lastName LIKE %:keyword% OR " +
-//            "c.email LIKE %:keyword% OR " +
-//            "c.phoneNumber LIKE %:keyword% OR " +
-//            "c.address LIKE %:keyword%")
-//    List<Customer> searchCustomers(@Param("keyword") String keyword);
+    /**
+     * Search for customers by query string within the context of a specific user.
+     * The search checks the first name, last name, email, phone number, and address.
+     *
+     * @param query   Search query
+     * @param user    Associated User entity
+     * @param pageable Pageable object for pagination
+     * @return Page of Customer entities that match the search criteria
+     */
     @Query("SELECT c FROM Customer c WHERE " +
             "(LOWER(c.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(c.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
@@ -51,6 +52,20 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             "c.user = :user")
     Page<Customer> searchCustomersByUser(@Param("query") String query, @Param("user") User user, Pageable pageable);
 
+    /**
+     * Filter and sort customers based on various fields within the context of a specific user.
+     * Any of the fields can be null, in which case they are not used in the filtering criteria.
+     *
+     * @param id          Customer ID
+     * @param firstName   First Name
+     * @param lastName    Last Name
+     * @param email       Email
+     * @param phoneNumber Phone Number
+     * @param address     Address
+     * @param pageable    Pageable object for pagination and sorting
+     * @param user        Associated User entity
+     * @return Page of Customer entities that match the filtering criteria
+     */
     @Query("SELECT c FROM Customer c WHERE " +
             "(:id IS NULL OR c.id = :id) AND " +
             "(:firstName IS NULL OR LOWER(c.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))) AND " +

@@ -22,6 +22,14 @@ public class LeadService {
     private final UserRepository userRepository;
 
 
+
+    /**
+     * Creates a new Lead and associates it with a User.
+     *
+     * @param leadDTO Data transfer object containing lead details.
+     * @return LeadDTO containing details of the saved lead.
+     * @throws UserNotFoundException if the associated user is not found.
+     */
     public LeadDTO createLead(LeadDTO leadDTO) {
         Lead lead = leadMapper.toEntity(leadDTO);
         User user = userRepository.findById(leadDTO.getUserId())
@@ -31,6 +39,15 @@ public class LeadService {
         return leadMapper.toDto(savedLead);
     }
 
+    /**
+     * Retrieves a Lead by its ID and associated User ID.
+     *
+     * @param id Lead ID.
+     * @param userId User ID associated with the lead.
+     * @return LeadDTO containing the lead details.
+     * @throws UserNotFoundException if the user is not found.
+     * @throws RuntimeException if the lead is not found.
+     */
     public LeadDTO getLeadByIdAndUserId(Long id, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -39,6 +56,13 @@ public class LeadService {
                 .orElseThrow(() -> new RuntimeException("Lead not found with id " + id));
     }
 
+    /**
+     * Retrieves all Leads associated with a specific User ID.
+     *
+     * @param userId User ID to filter leads by.
+     * @return List of LeadDTOs containing lead details.
+     * @throws UserNotFoundException if the user is not found.
+     */
     public List<LeadDTO> getAllLeadsByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -47,12 +71,27 @@ public class LeadService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves all Leads in the database.
+     *
+     * @return List of LeadDTOs containing all lead details.
+     */
     public List<LeadDTO> getAllLeads() {
         return leadRepository.findAll().stream()
                 .map(leadMapper::toDto)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Updates an existing Lead based on the provided LeadDTO.
+     * Only updates fields that are non-null in the DTO.
+     *
+     * @param id Lead ID to be updated.
+     * @param leadDTO Data transfer object containing updated lead details.
+     * @return LeadDTO containing updated lead details.
+     * @throws RuntimeException if the lead is not found.
+     * @throws UserNotFoundException if the new associated user is not found.
+     */
     public LeadDTO updateLead(Long id, LeadDTO leadDTO) {
         Lead lead = leadRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lead not found with id " + id));
@@ -82,6 +121,14 @@ public class LeadService {
         return leadMapper.toDto(updatedLead);
     }
 
+    /**
+     * Deletes a Lead by its ID and associated User ID.
+     *
+     * @param id Lead ID to be deleted.
+     * @param userId User ID associated with the lead.
+     * @throws UserNotFoundException if the user is not found.
+     * @throws RuntimeException if the lead is not found.
+     */
     public void deleteLead(Long id, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
