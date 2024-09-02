@@ -37,8 +37,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
      * Search for customers by query string within the context of a specific user.
      * The search checks the first name, last name, email, phone number, and address.
      *
-     * @param query   Search query
-     * @param user    Associated User entity
+     * @param query    Search query
+     * @param user     Associated User entity
      * @param pageable Pageable object for pagination
      * @return Page of Customer entities that match the search criteria
      */

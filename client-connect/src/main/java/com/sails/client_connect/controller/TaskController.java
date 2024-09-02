@@ -23,7 +23,13 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    //Get all tasks for the currently logged-in user, with optional sorting and filtering.
+    /**
+     * @param session       Get User ID from Session
+     * @param sortBy        columns (dueDate,Priority,Status)
+     * @param filterBy      columns(Priority, Status)
+     * @param filterByValue Get all tasks for the currently logged-in user, with sorting and filtering features.
+     * @return List of tasks
+     */
     @GetMapping
     public ResponseEntity<ApiResponse<List<TaskDTO>>> getAllTasks(
             HttpSession session,
@@ -39,7 +45,11 @@ public class TaskController {
         return ResponseEntity.ok(new ApiResponse<>("Tasks retrieved successfully", HttpStatus.OK, tasks));
     }
 
-    //Get Specific Task by Id
+    /**
+     * @param id      Task id
+     * @param session Get Specific Task using Id
+     * @return Task that matches with id
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<TaskDTO>> getTaskById(@PathVariable Long id, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
@@ -56,6 +66,12 @@ public class TaskController {
         }
     }
 
+    /**
+     * @param taskDTO Data for creating task
+     * @param session To create new task
+     * @return created task in json format
+     */
+
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<TaskDTO>> createTask(@Valid @RequestBody TaskDTO taskDTO, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
@@ -69,6 +85,12 @@ public class TaskController {
                 .body(new ApiResponse<>("Task created successfully", HttpStatus.CREATED, createdTask));
     }
 
+    /**
+     * @param id      Task id
+     * @param taskDTO Values to update
+     * @param session To update specific task using task id
+     * @return Updated task
+     */
     @PatchMapping("/update/{id}")
     public ResponseEntity<ApiResponse<TaskDTO>> patchUpdateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
@@ -81,6 +103,11 @@ public class TaskController {
         return ResponseEntity.ok(new ApiResponse<>("Task updated successfully", HttpStatus.OK, updatedTask));
     }
 
+    /**
+     * @param id      Task Id
+     * @param session Delete Specific Task using Id
+     * @return Deleted task message
+     */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<String>> deleteTask(@PathVariable Long id, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
@@ -98,6 +125,13 @@ public class TaskController {
         }
     }
 
+    /**
+     * @param query   Value we want to search
+     * @param page
+     * @param size
+     * @param session To search tasks which matches with query
+     * @return Tasks
+     */
     @GetMapping("/search")
     public ResponseEntity<Page<TaskDTO>> searchTasks(
             @RequestParam(required = false) String query,
@@ -108,6 +142,11 @@ public class TaskController {
         Page<TaskDTO> taskPage = taskService.searchTasks(query, page, size, userId);
         return ResponseEntity.ok(taskPage);
     }
+
+    /**
+     * User can sort and filter tasks using specified fields
+     * return Multiple Tasks that matches the above conditions.
+     */
 
     @GetMapping("/filter-sort")
     public ResponseEntity<Page<TaskDTO>> filterAndSortTasks(

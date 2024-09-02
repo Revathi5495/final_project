@@ -10,6 +10,7 @@ public class OtpService {
 
     /**
      * Generates a random otp with length = 6
+     *
      * @return otp
      */
     public String generateOtp() {
@@ -20,4 +21,4 @@ public class OtpService {
         }
         return otp.toString();
     }
- }
+}

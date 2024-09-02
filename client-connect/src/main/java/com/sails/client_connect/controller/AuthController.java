@@ -1,21 +1,20 @@
 package com.sails.client_connect.controller;
 
-
 import com.sails.client_connect.dto.*;
 import com.sails.client_connect.entity.RefreshToken;
+import com.sails.client_connect.entity.RoleName;
 import com.sails.client_connect.entity.User;
+import com.sails.client_connect.repository.UserRepository;
 import com.sails.client_connect.service.*;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,17 +32,16 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final UserRepository userRepository;
 
 
     private Map<String, String> otpStore = new HashMap<>();
     private Map<String, Long> otpExpiryStore = new HashMap<>();
 
     /**
-     *
      * @param userAuthRequest
-     * @param session
-     * Authenticates the username and password entered while login
-     * If authenticated generate otp with expiry time and sends it to the users email using email service
+     * @param session         Authenticates the username and password entered while login
+     *                        If authenticated generate otp with expiry time and sends it to the users email using email service
      * @return
      */
     @PostMapping("/login")
@@ -55,13 +53,12 @@ public class AuthController {
                 )
         );
 
-        if(authenticate.isAuthenticated()) {
+        if (authenticate.isAuthenticated()) {
 
             User authenticatedUser = userService.findByUsername(userAuthRequest.getUsername());
             session.setAttribute("userId", authenticatedUser.getUser_id());
 
-        }
-        else{
+        } else {
             throw new UsernameNotFoundException("invalid user request !");
         }
 
@@ -76,28 +73,10 @@ public class AuthController {
     }
 
 
-    @PostMapping("/authenticate")
-    public String authenticateAndGetToken(@Valid @RequestBody UserAuthRequest userAuthRequest, HttpSession session) {
-        Authentication authenticate = authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(userAuthRequest.getUsername(), userAuthRequest.getPassword()));
-
-        if(authenticate.isAuthenticated()) {
-
-            User authenticatedUser = userService.findByUsername(userAuthRequest.getUsername());
-            session.setAttribute("userId", authenticatedUser.getUser_id());
-            return jwtService.generateToken(userAuthRequest.getUsername());
-        }
-        else{
-            throw new UsernameNotFoundException("invalid user request !");
-        }
-
-    }
-
 
     /**
-     *
-     * @param otpRequestDto
-     * Verifies the otp stored and otp sent in body
-     * If all conditions satisfy then it generates access token along with refresh token
+     * @param otpRequestDto Verifies the otp stored and otp sent in body
+     *                      If all conditions satisfy then it generates access token along with refresh token
      * @return message written in response entity according the conditions written
      */
     @PostMapping("/verify-otp")
@@ -127,20 +106,18 @@ public class AuthController {
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(otpRequestDto.getUsername());
 
         JwtResponseDTO responseDto = JwtResponseDTO.builder()
-                                                    .accessToken(jwt)
-                                                    .refreshToken(refreshToken.getToken())
-                                                    .message("Access Token and Refresh Token are created")
-                                                    .build();
+                .accessToken(jwt)
+                .refreshToken(refreshToken.getToken())
+                .message("Access Token and Refresh Token are created")
+                .build();
 
         return ResponseEntity.ok(responseDto);
     }
 
 
     /**
-     *
-     * @param refreshTokenRequest
-     * Verifies if the refresh stored and sent in request are matched
-     * If all conditions satisfy then generated a new access token with it
+     * @param refreshTokenRequest Verifies if the refresh stored and sent in request are matched
+     *                            If all conditions satisfy then generated a new access token with it
      * @return A new access token is given for continuing session
      */
     @PostMapping("/refreshToken")
@@ -165,10 +142,8 @@ public class AuthController {
     }
 
     /**
-     *
      * @param username
-     * @param newPassword
-     * It is used to change the password
+     * @param newPassword It is used to change the password
      * @return Password changed message
      */
     @PutMapping("/change-password")
@@ -178,28 +153,18 @@ public class AuthController {
     }
 
     /**
-     *
-     * @param userAuth
-     * Checks if the role of user being added is admin and continues if it validates.
-     * If role is not admin
+     * @param userAuth Checks if the role of user being added is admin and continues if it validates.
+     *                 If role is not admin
      * @return A message that only admin has access to add a new user
      */
-    @PostMapping("/adduser")
-    public ResponseEntity<String> addUser(@Valid @RequestBody UserAuth userAuth){
-        try {
+    @PostMapping("/addAdmin")
+    public ResponseEntity<String> addUser(@Valid @RequestBody UserAuth userAuth) throws MessagingException {
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-                throw new AccessDeniedException("Only admins can add new users.");
-            }
-
-            userService.saveUser(userAuth);
-            return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
-        } catch (AccessDeniedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        if (!userAuth.getRoleNames().contains(RoleName.ADMIN)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Only admins can add new users into system.");
         }
+        userService.saveUser(userAuth);
+        return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
     }
 
 

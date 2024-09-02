@@ -25,12 +25,10 @@ public class RefreshTokenService {
     private Long refreshTokenExpiryTimeMs;
 
     /**
-     *
-     * @param username
-     * Checks if the username sent in request is in database
-     * If satisfies then check if refresh token already present in database
-     * If present then update it with new access token
-     * Else Generate new refresh token
+     * @param username Checks if the username sent in request is in database
+     *                 If satisfies then check if refresh token already present in database
+     *                 If present then update it with new access token
+     *                 Else Generate new refresh token
      * @return Refresh token
      */
     public RefreshToken createRefreshToken(String username) {
@@ -59,9 +57,7 @@ public class RefreshTokenService {
 
 
     /**
-     *
-     * @param token
-     * Find the token if it is in database
+     * @param token Find the token if it is in database
      * @return Refresh token
      */
     public Optional<RefreshToken> findByToken(String token) {
@@ -69,15 +65,13 @@ public class RefreshTokenService {
     }
 
     /**
-     *
-     * @param token
-     * Verify if the refresh token has expired
+     * @param token Verify if the refresh token has expired
      * @return Refresh Token
      */
-    public RefreshToken verifyExpiration(RefreshToken token){
-        if(token.getExpiryDate().compareTo(Instant.now())<0){
+    public RefreshToken verifyExpiration(RefreshToken token) {
+        if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
-            throw new RuntimeException(" Refresh token was expired. Please make a new login request  "+ token.getToken());
+            throw new RuntimeException(" Refresh token was expired. Please make a new login request  " + token.getToken());
         }
 
         return token;

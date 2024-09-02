@@ -20,9 +20,7 @@ public class JwtService {
     public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
     /**
-     *
-     * @param token
-     * Extracts the username from the jwt token
+     * @param token Extracts the username from the jwt token
      * @return Username
      */
     public String extractUsername(String token) {
@@ -30,9 +28,7 @@ public class JwtService {
     }
 
     /**
-     *
-     * @param token
-     * Extracts the expiry time from the jwt token
+     * @param token Extracts the expiry time from the jwt token
      * @return Expiry time
      */
     public Date extractExpiration(String token) {
@@ -45,9 +41,7 @@ public class JwtService {
     }
 
     /**
-     *
-     * @param token
-     * Uses the token to get the sign in the claim
+     * @param token Uses the token to get the sign in the claim
      * @return claim
      */
     private Claims extractAllClaims(String token) {
@@ -60,9 +54,7 @@ public class JwtService {
     }
 
     /**
-     *
-     * @param token
-     * Checks if the token has expired
+     * @param token Checks if the token has expired
      * @return Boolean
      */
     private Boolean isTokenExpired(String token) {
@@ -70,10 +62,8 @@ public class JwtService {
     }
 
     /**
-     *
      * @param token
-     * @param userDetails
-     * Validates the token by extracting username from it and verifying it with the username from database
+     * @param userDetails Validates the token by extracting username from it and verifying it with the username from database
      * @return
      */
     public Boolean validateToken(String token, UserDetails userDetails) {
@@ -82,21 +72,17 @@ public class JwtService {
     }
 
     /**
-     *
-     * @param username
-     * Generates a claim using the username
+     * @param username Generates a claim using the username
      * @return claim
      */
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims,username);
+        return createToken(claims, username);
     }
 
     /**
-     *
      * @param claims
-     * @param username
-     * Creates a token using the claim add the expiry time and sign to it
+     * @param username Creates a token using the claim add the expiry time and sign to it
      * @return Jwt token
      */
     private String createToken(Map<String, Object> claims, String username) {
@@ -104,12 +90,13 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*30))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
     /**
      * Gives a sign key with the specified algorithm
+     *
      * @return Key
      */
     private Key getSignKey() {

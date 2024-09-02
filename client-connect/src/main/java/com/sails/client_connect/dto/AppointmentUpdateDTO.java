@@ -1,4 +1,4 @@
-// AppointmentDTO.java
+
 package com.sails.client_connect.dto;
 
 import com.sails.client_connect.entity.RecurrencePattern;

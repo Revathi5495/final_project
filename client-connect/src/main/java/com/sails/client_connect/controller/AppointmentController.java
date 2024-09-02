@@ -1,7 +1,6 @@
 package com.sails.client_connect.controller;
 
 import com.sails.client_connect.dto.AppointmentDTO;
-import com.sails.client_connect.dto.LeadDTO;
 import com.sails.client_connect.response.ApiResponse;
 import com.sails.client_connect.service.AppointmentService;
 import jakarta.servlet.http.HttpSession;
@@ -23,6 +22,11 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
 
+    /**
+     * @param appointmentDTO
+     * @param session        To create an appointment
+     */
+
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<AppointmentDTO>> createAppointment(
             @Valid @RequestBody AppointmentDTO appointmentDTO, HttpSession session) {
@@ -33,6 +37,12 @@ public class AppointmentController {
                 .body(new ApiResponse<>("Appointment created successfully", HttpStatus.CREATED, createdAppointment));
     }
 
+    /**
+     * @param id
+     * @param appointmentDTO
+     * @param session        To update an appointment by ID
+     */
+
     @PutMapping("/update/{id}")
     public ResponseEntity<ApiResponse<AppointmentDTO>> updateAppointment(
             @PathVariable Long id, @RequestBody AppointmentDTO appointmentDTO, HttpSession session) {
@@ -42,12 +52,24 @@ public class AppointmentController {
         return ResponseEntity.ok(new ApiResponse<>("Appointment updated successfully", HttpStatus.OK, updatedAppointment));
     }
 
+    /**
+     * @param id
+     * @param session To delete an appointment by ID
+     */
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteAppointment(@PathVariable Long id, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         appointmentService.deleteAppointment(id, userId);
         return ResponseEntity.ok(new ApiResponse<>("Appointment deleted successfully", HttpStatus.NO_CONTENT, null));
     }
+
+    /**
+     * To get appointment of a user by user id
+     *
+     * @param id
+     * @param session
+     */
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<AppointmentDTO>> getAppointment(@PathVariable Long id, HttpSession session) {
@@ -56,12 +78,25 @@ public class AppointmentController {
         return ResponseEntity.ok(new ApiResponse<>("Appointment retrieved successfully", HttpStatus.OK, appointment));
     }
 
+    /**
+     * To get all appointments
+     *
+     * @param session
+     */
+
     @GetMapping
     public ResponseEntity<ApiResponse<List<AppointmentDTO>>> getAllAppointments(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         List<AppointmentDTO> appointments = appointmentService.getAllAppointments(userId);
         return ResponseEntity.ok(new ApiResponse<>("Appointments retrieved successfully", HttpStatus.OK, appointments));
     }
+
+    /**
+     * @param query
+     * @param page
+     * @param size
+     * @param session To search an appointment
+     */
 
     @GetMapping("/search")
     public ResponseEntity<Page<AppointmentDTO>> searchAppointments(
@@ -72,6 +107,10 @@ public class AppointmentController {
         Page<AppointmentDTO> appointmentPage = appointmentService.searchAppointments(query, page, size, userId);
         return ResponseEntity.ok(appointmentPage);
     }
+
+    /**
+     * To filter an appointment based on title ,recurrence pattern
+     */
 
     @GetMapping("/filter-sort")
     public ResponseEntity<Page<AppointmentDTO>> filterAndSortAppointments(

@@ -31,7 +31,11 @@ public class TaskService {
 
     private final TaskMapper taskMapper;
 
-
+    /**
+     * @param id     Task id
+     * @param userId user id of Currently logged in user
+     * @return Specific task that matches task id
+     */
     public TaskDTO getTaskById(Long id, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -40,6 +44,11 @@ public class TaskService {
                 .orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id));
     }
 
+    /**
+     * To get all tasks for admin
+     *
+     * @return List of all tasks
+     */
     public List<TaskDTO> getAllTasksToAdminView() {
         List<Task> tasks = taskRepository.findAll();
         return tasks.stream()
@@ -47,7 +56,11 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
-
+    /**
+     * @param taskDTO To send task data to create task
+     *                convert dto to entity and save
+     * @return Task as taskDTO
+     */
     public TaskDTO createTask(TaskDTO taskDTO) {
 
         User user = userRepository.findById(taskDTO.getUserId())
@@ -55,79 +68,93 @@ public class TaskService {
         Customer customer = customerRepository.findById(taskDTO.getCustomerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
-        // Convert DTO to Entity and set additional fields
+        // Convert DTO to Entity and save
         Task task = taskMapper.toEntity(taskDTO);
         task.setUser(user);
         task.setCustomer(customer);
         task.setCreatedDate(LocalDateTime.now());
         task.setLastUpdatedDate(LocalDateTime.now());
-
-        // Save the entity
         Task savedTask = taskRepository.save(task);
 
         // Convert saved entity to DTO and return
         return taskMapper.toDTO(savedTask);
     }
 
-public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
-    User user = userRepository.findById(taskDTO.getUserId())
-            .orElseThrow(() -> new UserNotFoundException("User not found"));
-    Task task = taskRepository.findByIdAndUser(id, user)
-            .orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id));
+    /**
+     * @param id      Task id
+     * @param taskDTO User can update specific fields in task using patch
+     * @return Updated task
+     */
+    public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
+        User user = userRepository.findById(taskDTO.getUserId())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Task task = taskRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id));
 
-    // Update only non-null fields
-    if (taskDTO.getClientName() != null) {
-        task.setClientName(taskDTO.getClientName());
-    }
-    if (taskDTO.getTaskTitle() != null) {
-        task.setTaskTitle(taskDTO.getTaskTitle());
-    }
-    if (taskDTO.getDescription() != null) {
-        task.setDescription(taskDTO.getDescription());
-    }
-    if (taskDTO.getDueDateTime() != null) {
-        task.setDueDateTime(taskDTO.getDueDateTime());
-    }
-    if (taskDTO.getPriority() != null) {
-        task.setPriority(taskDTO.getPriority());
-    }
-    if (taskDTO.getStatus() != null) {
-        task.setStatus(taskDTO.getStatus());
-    }
-    if (taskDTO.getRecurrencePattern() != null) {
-        try {
-            task.setRecurrencePattern(RecurrencePattern.valueOf(taskDTO.getRecurrencePattern().name()));
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid recurrence pattern: " + taskDTO.getRecurrencePattern());
+        if (taskDTO.getClientName() != null) {
+            task.setClientName(taskDTO.getClientName());
         }
-    }
-    if (taskDTO.getUserId() != null) {
-        User assignedTo = userRepository.findById(taskDTO.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + taskDTO.getUserId()));
-        task.setUser(assignedTo);
-    }
-    if (taskDTO.getCustomerId() != null) {
-        Customer customer = customerRepository.findById(taskDTO.getCustomerId())
-                .orElseThrow(() -> new UserNotFoundException("Customer not found with id: " + taskDTO.getCustomerId()));
-        task.setCustomer(customer);
+        if (taskDTO.getTaskTitle() != null) {
+            task.setTaskTitle(taskDTO.getTaskTitle());
+        }
+        if (taskDTO.getDescription() != null) {
+            task.setDescription(taskDTO.getDescription());
+        }
+        if (taskDTO.getDueDateTime() != null) {
+            task.setDueDateTime(taskDTO.getDueDateTime());
+        }
+        if (taskDTO.getPriority() != null) {
+            task.setPriority(taskDTO.getPriority());
+        }
+        if (taskDTO.getStatus() != null) {
+            task.setStatus(taskDTO.getStatus());
+        }
+        if (taskDTO.getRecurrencePattern() != null) {
+            try {
+                task.setRecurrencePattern(RecurrencePattern.valueOf(taskDTO.getRecurrencePattern().name()));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid recurrence pattern: " + taskDTO.getRecurrencePattern());
+            }
+        }
+        if (taskDTO.getUserId() != null) {
+            User assignedTo = userRepository.findById(taskDTO.getUserId())
+                    .orElseThrow(() -> new UserNotFoundException("User not found with id: " + taskDTO.getUserId()));
+            task.setUser(assignedTo);
+        }
+        if (taskDTO.getCustomerId() != null) {
+            Customer customer = customerRepository.findById(taskDTO.getCustomerId())
+                    .orElseThrow(() -> new UserNotFoundException("Customer not found with id: " + taskDTO.getCustomerId()));
+            task.setCustomer(customer);
+        }
+
+        task.setLastUpdatedDate(LocalDateTime.now());
+
+        Task updatedTask = taskRepository.save(task);
+
+        // Convert updated entity to DTO and return
+        return taskMapper.toDTO(updatedTask);
     }
 
-    // Update the lastUpdatedDate field to indicate a change
-    task.setLastUpdatedDate(LocalDateTime.now());
-
-    // Save the updated entity
-    Task updatedTask = taskRepository.save(task);
-
-    // Convert updated entity to DTO and return
-    return taskMapper.toDTO(updatedTask);
-}
+    /**
+     * @param id     Task id
+     * @param userId Currently Logged in User Id
+     *               Delete specific task using task id.
+     */
     public void deleteTask(Long id, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        Task task=taskRepository.findByIdAndUser(id, user)
+        Task task = taskRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new UserNotFoundException("Task not found with id: " + id)); // Throw exception if task not found
         taskRepository.delete(task);
     }
+
+    /**
+     * @param userId      Currently Logged in User Id
+     * @param sortBy
+     * @param filterBy
+     * @param filterValue Get all tasks by applying sorting and filtering
+     * @return List of tasks that matches above conditions
+     */
 
     public List<TaskDTO> getAllTasks(Long userId, String sortBy, String filterBy, String filterValue) {
         User user = userRepository.findById(userId)
@@ -135,7 +162,7 @@ public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
 
         List<Task> tasks = taskRepository.findByUser(user);
 
-        // Apply filtering if filterBy and filterValue are provided
+        // filtering
         if (filterBy != null && filterValue != null) {
             tasks = tasks.stream()
                     .filter(task -> filterTask(task, filterBy, filterValue))
@@ -148,6 +175,7 @@ public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
         return taskMapper.toDTOList(tasks);
     }
 
+    //filter tasks by Priority, Status, Due Date
     private boolean filterTask(Task task, String filterBy, String filterValue) {
         switch (filterBy) {
             case "priority":
@@ -156,12 +184,12 @@ public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
                 return task.getStatus().name().equalsIgnoreCase(filterValue);
             case "dueDate":
                 return task.getDueDateTime().toString().contains(filterValue);
-            // Add more cases if necessary
             default:
                 return true;
         }
     }
 
+    //Sort based on request params like priorityAsc,statusAsc etc.
     private List<Task> applySorting(List<Task> tasks, String sortBy) {
         if ("priorityAsc".equals(sortBy)) {
             tasks.sort(Comparator.comparingInt(this::mapPriority));
@@ -204,43 +232,48 @@ public TaskDTO patchUpdateTask(Long id, TaskDTO taskDTO) {
                 return 0;
         }
     }
+
+    /**
+     * @param query
+     * @param page
+     * @param size
+     * @param userId Currently Logged User id
+     *               Search tasks with multiple fields.
+     * @return Multiple tasks which matches conditions
+     */
     public Page<TaskDTO> searchTasks(String query, int page, int size, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
         Pageable pageable = PageRequest.of(page, size);
 
-        // Initialize enums as null
         Priority priority = null;
         Status status = null;
 
-        // Attempt to convert query to Priority enum
         try {
             if (query != null && !query.isEmpty()) {
                 priority = Priority.valueOf(query.toUpperCase());
             }
         } catch (IllegalArgumentException e) {
-            // Handle conversion failure
+
         }
 
-        // Attempt to convert query to Status enum
         try {
             if (query != null && !query.isEmpty()) {
                 status = Status.valueOf(query.toUpperCase());
             }
         } catch (IllegalArgumentException e) {
-            // Handle conversion failure
+
         }
 
-        // If conversion fails, priority and status will remain null
         Page<Task> taskPage = taskRepository.searchTasksByUser(query, status, priority, userId, pageable);
         return taskPage.map(taskMapper::toDTO);
     }
 
+    /**
+     * User can sort and filter tasks by using taskRepository.
+     * return Multiple tasks after applying filter and sort.
+     */
     public Page<TaskDTO> filterAndSortTasks(Long id, String clientName, String taskTitle,
                                             String status, String priority, LocalDateTime dueDateTime,
                                             int page, int size, Sort sort, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Task> taskPage = taskRepository.filterAndSortTasksByUser(
                 id, clientName, taskTitle, status, priority, dueDateTime, pageable, userId);

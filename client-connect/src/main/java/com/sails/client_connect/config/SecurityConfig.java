@@ -1,6 +1,5 @@
 package com.sails.client_connect.config;
 
-
 import com.sails.client_connect.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,10 +27,8 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
 
     /**
-     *
-     * @param http
-     * Verifies the Roles assigned to the api requests and gives permissions
-     * adds jwt filter with the username used while login
+     * @param http Verifies the Roles assigned to the api requests and gives permissions
+     *             adds jwt filter with the username used while login
      * @return
      * @throws Exception
      */
@@ -41,7 +38,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("ADMIN","MANAGER", "USER")
+                        .requestMatchers("/user/**").hasAnyRole("ADMIN", "MANAGER", "USER")
                         .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")
                         .anyRequest().permitAll()
 
@@ -50,7 +47,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
 
 
@@ -58,6 +55,7 @@ public class SecurityConfig {
 
     /**
      * Encodes the password
+     *
      * @return Encoded password
      */
     @Bean
@@ -67,7 +65,7 @@ public class SecurityConfig {
 
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(customUserDetailsService); //fetches the user details from database
         authenticationProvider.setPasswordEncoder(passwordEncoder()); //checks if password given and in database are same

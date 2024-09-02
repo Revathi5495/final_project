@@ -27,9 +27,7 @@ public class RoleService {
     private final UserMapper userMapper;
 
     /**
-     *
-     * @param roleDTO
-     * Save the role created into database
+     * @param roleDTO Save the role created into database
      * @return
      */
     public RoleDTO createRole(RoleDTO roleDTO) {
@@ -39,11 +37,9 @@ public class RoleService {
     }
 
     /**
-     *
      * @param userId
-     * @param roleUpdateDtos
-     * Checks if the user and role are present in database
-     * If present then update the role of that user
+     * @param roleUpdateDtos Checks if the user and role are present in database
+     *                       If present then update the role of that user
      * @return User with updated role
      */
     public UserRoleUpdateDTO updateUserRoles(int userId, Set<RoleUpdateDTO> roleUpdateDtos) {
@@ -65,9 +61,7 @@ public class RoleService {
     }
 
     /**
-     *
-     * @param id
-     * Check if the role is present in database and remove it
+     * @param id Check if the role is present in database and remove it
      * @throws RoleNotFoundException
      */
     public void deleteRole(Long id) throws RoleNotFoundException {
@@ -84,9 +78,7 @@ public class RoleService {
     }
 
     /**
-     *
-     * @param id
-     * Check the role is present in database by id
+     * @param id Check the role is present in database by id
      * @return role
      * @throws RoleNotFoundException
      */
@@ -98,6 +90,7 @@ public class RoleService {
 
     /**
      * Fetch all the roles from database
+     *
      * @return List of roles
      */
     public List<RoleDTO> getAllRoles() {

@@ -28,5 +28,6 @@ public class LeadDTO {
     @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "^\\d{10}$", message = "Phone number must be exactly 10 digits and contain digits only")
     private String phoneNumber;
+
     private Long userId;
 }

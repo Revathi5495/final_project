@@ -1,7 +1,6 @@
 package com.sails.client_connect.repository;
 
 
-
 import com.sails.client_connect.entity.Role;
 import com.sails.client_connect.entity.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;

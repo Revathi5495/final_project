@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 public class ClientConnectApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ClientConnectApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ClientConnectApplication.class, args);
+    }
 
 }

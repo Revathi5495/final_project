@@ -39,18 +39,16 @@ public class Customer {
     @Pattern(regexp = "\\d{10}", message = "Phone number must contain digits only")
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Appointment> appointments;
 
-//    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Lead> leads;
 
 }
 

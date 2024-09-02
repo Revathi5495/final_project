@@ -21,9 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 
     /**
-     *
-     * @param username
-     * While Logging into the System checks if the username entered and username in database are same
+     * @param username While Logging into the System checks if the username entered and username in database are same
      * @return UserDetails of that user
      * If User not present in database then
      * @throws UsernameNotFoundException
@@ -41,9 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     /**
-     * @param user
-     * Checks if the last updated password is still before the expiry time
-     *
+     * @param user Checks if the last updated password is still before the expiry time
      */
     private void checkPasswordExpiry(User user) {
         LocalDateTime passwordLastSet = user.getPasswordLastSet();
@@ -56,7 +52,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             }
         }
     }
-
 
 
 }

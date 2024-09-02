@@ -21,10 +21,10 @@ public class LeadController {
 
     /**
      * this end point ensures to create lead by the user
+     *
      * @param leadDTO
-     * @param session
-     * Taking User id from the Http session and set that user id in LeadDTO class
-     * leadService.createLead(leadDTO): it inserts the data (abstracted from the response body) with user id into lead table
+     * @param session Taking User id from the Http session and set that user id in LeadDTO class
+     *                leadService.createLead(leadDTO): it inserts the data (abstracted from the response body) with user id into lead table
      * @return return response with message,status code,and data which is passed in response body
      */
     @PostMapping("/create") //this end point ensures to create lead by the user
@@ -32,10 +32,9 @@ public class LeadController {
             @Valid @RequestBody LeadDTO leadDTO,
             HttpSession session) {
 
-        // Retrieve the user_id from the session
         Long userId = (Long) session.getAttribute("userId");
 
-        // Set the user_id in the leadDTO
+
         leadDTO.setUserId(userId);
 
         LeadDTO createdLead = leadService.createLead(leadDTO);
@@ -48,10 +47,9 @@ public class LeadController {
     }
 
     /**
-     *
-     * @param id Lead ID
+     * @param id      Lead ID
      * @param session Get User ID from Session
-     * Get specific lead using ID
+     *                Get specific lead using ID
      * @return Lead that matches the given ID
      */
     @GetMapping("/{id}")
@@ -59,7 +57,6 @@ public class LeadController {
             @PathVariable Long id,
             HttpSession session) {
 
-        // Retrieve the user_id from the session
         Long userId = (Long) session.getAttribute("userId");
 
         LeadDTO leadDTO = leadService.getLeadByIdAndUserId(id, userId);
@@ -68,13 +65,12 @@ public class LeadController {
 
     /**
      * @param session Get User ID from Session
-     * Get all leads for the currently logged-in user
+     *                Get all leads for the currently logged-in user
      * @return List of leads associated with the user
      */
     @GetMapping
     public ResponseEntity<List<LeadDTO>> getAllLeads(HttpSession session) {
 
-        // Retrieve the user_id from the session
         Long userId = (Long) session.getAttribute("userId");
 
         List<LeadDTO> leads = leadService.getAllLeadsByUserId(userId);
@@ -82,11 +78,10 @@ public class LeadController {
     }
 
     /**
-     *
-     * @param id Lead ID
+     * @param id      Lead ID
      * @param leadDTO Values to update
      * @param session Get User ID from Session
-     * To update a specific lead using lead ID
+     *                To update a specific lead using lead ID
      * @return Updated lead with a success message and HTTP status code
      */
     @PatchMapping("/update/{id}")
@@ -109,9 +104,9 @@ public class LeadController {
     }
 
     /**
-     * @param id Lead ID
+     * @param id      Lead ID
      * @param session Get User ID from Session
-     * Delete specific lead using ID
+     *                Delete specific lead using ID
      * @return Success message indicating the lead was deleted with HTTP status code
      */
     @DeleteMapping("/delete/{id}")
@@ -119,7 +114,6 @@ public class LeadController {
             @PathVariable Long id,
             HttpSession session) {
 
-        // Retrieve the user_id from the session
         Long userId = (Long) session.getAttribute("userId");
 
         leadService.deleteLead(id, userId);

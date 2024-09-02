@@ -28,7 +28,7 @@ public class CustomerController {
      * Creates a new customer for the logged-in user.
      *
      * @param customerDTO Data for creating the customer.
-     * @param session HttpSession to retrieve the user ID.
+     * @param session     HttpSession to retrieve the user ID.
      * @return The created customer in JSON format.
      */
     @PostMapping("/create")
@@ -60,7 +60,7 @@ public class CustomerController {
      * @return The customer matching the provided ID.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerUpdateDTO> getCustomerById(@PathVariable Long id,HttpSession session) {
+    public ResponseEntity<CustomerUpdateDTO> getCustomerById(@PathVariable Long id, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         CustomerUpdateDTO customerDTO = customerService.getCustomerByIdAndUserId(id, userId);
         return new ResponseEntity<>(customerDTO, HttpStatus.OK);
@@ -117,7 +117,7 @@ public class CustomerController {
      * @return A message indicating the customer was deleted successfully.
      */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteCustomer(@PathVariable Long id,HttpSession session) {
+    public ResponseEntity<ApiResponse<Void>> deleteCustomer(@PathVariable Long id, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         customerService.deleteCustomer(id, userId);
         ApiResponse<Void> response = new ApiResponse<>(
@@ -141,7 +141,7 @@ public class CustomerController {
     public ResponseEntity<Page<CustomerUpdateDTO>> searchCustomers(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,HttpSession session) {
+            @RequestParam(defaultValue = "10") int size, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         Page<CustomerUpdateDTO> customerPage = customerService.searchCustomers(query, page, size, userId);
         return ResponseEntity.ok(customerPage);
@@ -175,7 +175,7 @@ public class CustomerController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "firstName") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,HttpSession session) {
+            @RequestParam(defaultValue = "asc") String sortDir, HttpSession session) {
 
         Long userId = (Long) session.getAttribute("userId");
         Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);

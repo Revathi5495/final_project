@@ -1,6 +1,5 @@
 package com.sails.client_connect.controller;
 
-
 import com.sails.client_connect.config.CustomUserDetails;
 import com.sails.client_connect.dto.UserDTO;
 import com.sails.client_connect.service.JwtService;
@@ -25,6 +24,7 @@ public class UserController {
 
     /**
      * User can see all the users in the system
+     *
      * @return List of users
      */
     @GetMapping("/all")
@@ -38,12 +38,10 @@ public class UserController {
     }
 
     /**
-     *
      * @param username
      * @param newPassword
-     * @param customUserDetails
-     * Checks if the user accessing and username in request are same
-     * If authenticated then that specific User can update his password
+     * @param customUserDetails Checks if the user accessing and username in request are same
+     *                          If authenticated then that specific User can update his password
      * @return Response message according to conditions
      */
     @PutMapping("/update-password")

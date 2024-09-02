@@ -22,9 +22,8 @@ public class ApiResponse<T> {
         this.message = message;
         this.status = status;
         this.data = data;
-        this.timestamp = LocalDateTime.now();  // Set the current time
+        this.timestamp = LocalDateTime.now();
     }
 
-    // Getters and Setters
 }
 

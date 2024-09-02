@@ -1,7 +1,6 @@
 package com.sails.client_connect.mapper;
 
 
-
 import com.sails.client_connect.dto.RoleDTO;
 import com.sails.client_connect.entity.Role;
 import org.mapstruct.Mapper;

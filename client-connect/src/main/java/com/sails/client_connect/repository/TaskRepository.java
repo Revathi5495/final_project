@@ -16,11 +16,22 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task,Long> {
+public interface TaskRepository extends JpaRepository<Task, Long> {
+
+    /**
+     * @param id   task id
+     * @param user Logged in user
+     * @return Task that matches task id and user
+     */
     Optional<Task> findByIdAndUser(Long id, User user);
+
+    /**
+     * @param user
+     * @return Task that matches user
+     */
     List<Task> findByUser(User user);
 
-
+    //Query to Search based on query string and userID
     @Query("SELECT t FROM Task t WHERE " +
             "(LOWER(t.clientName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(t.taskTitle) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
@@ -33,6 +44,7 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
                                  @Param("userId") Long userId,
                                  Pageable pageable);
 
+    //Query method to filter and sort tasks by various criteria.
     @Query("SELECT t FROM Task t WHERE " +
             "(:id IS NULL OR t.id = :id) AND " +
             "(:clientName IS NULL OR LOWER(t.clientName) LIKE LOWER(CONCAT('%', :clientName, '%'))) AND " +
@@ -48,10 +60,6 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
                                         @Param("priority") String priority,
                                         @Param("dueDateTime") LocalDateTime dueDateTime,
                                         Pageable pageable, @Param("userId") Long userId);
-
-
-
-
 
 
 }

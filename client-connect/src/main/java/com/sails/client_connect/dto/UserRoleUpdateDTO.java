@@ -2,7 +2,6 @@ package com.sails.client_connect.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +23,7 @@ public class UserRoleUpdateDTO {
     @Email(message = "Invalid email format")
     private String email;
 
-    @NotEmpty(message = "The role names is required")
+    @NotNull(message = "The role names is required")
     private Set<RoleUpdateDTO> roleNames;
 
 }

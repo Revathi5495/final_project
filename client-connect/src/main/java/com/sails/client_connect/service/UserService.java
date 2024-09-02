@@ -28,11 +28,9 @@ public class UserService {
     private final EmailService emailService;
 
     /**
-     *
-     * @param userAuth
-     * Check if Admin is already present in database if not only then add Admin
-     * Create a User object and set the details in it
-     * Save the user in database and send the required details to email service
+     * @param userAuth Check if Admin is already present in database if not only then add Admin
+     *                 Create a User object and set the details in it
+     *                 Save the user in database and send the required details to email service
      * @throws MessagingException
      */
     public void saveUser(UserAuth userAuth) throws MessagingException {
@@ -74,6 +72,7 @@ public class UserService {
 
     /**
      * Fetch all the users from the database
+     *
      * @return List of users
      */
     public List<UserDTO> findAllUsers() {
@@ -89,9 +88,7 @@ public class UserService {
     }
 
     /**
-     *
-     * @param username
-     * Fetch the user details using username
+     * @param username Fetch the user details using username
      * @return User details that are fetched
      */
     public User findByUsername(String username) {
@@ -100,10 +97,8 @@ public class UserService {
     }
 
     /**
-     *
      * @param username
-     * @param newPassword
-     * Check if username is present in database and update the password
+     * @param newPassword Check if username is present in database and update the password
      */
     public void updatePassword(String username, String newPassword) {
         User user = userRepository.findByUsername(username)
@@ -113,5 +108,5 @@ public class UserService {
         userRepository.save(user);
     }
 
-    
+
 }

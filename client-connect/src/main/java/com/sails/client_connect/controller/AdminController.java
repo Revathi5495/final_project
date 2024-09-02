@@ -1,7 +1,5 @@
 package com.sails.client_connect.controller;
 
-
-
 import com.sails.client_connect.dto.*;
 import com.sails.client_connect.service.CustomerService;
 import com.sails.client_connect.service.RoleService;
@@ -28,26 +26,21 @@ public class AdminController {
     private final RoleService roleService;
 
     /**
-     *
-     * @param userAuth
-     * Admin adds the user into system with dummy password
+     * @param userAuth Admin adds the user into system with dummy password
      * @return Response message User Created is sent
      */
     @PostMapping("/adduser")
-    public ResponseEntity<String> addUser(@Valid @RequestBody UserAuth userAuth){
-        try{
+    public ResponseEntity<String> addUser(@Valid @RequestBody UserAuth userAuth) {
+        try {
             userService.saveUser(userAuth);
-            return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully" );
-        }
-        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     /**
-     *
-     * @param roleDTO
-     * Admin can add roles in the system
+     * @param roleDTO Admin can add roles in the system
      * @return New role is added in database
      */
     @PostMapping("/role/addRole")
@@ -57,10 +50,8 @@ public class AdminController {
     }
 
     /**
-     *
      * @param userId
-     * @param roleUpdateDTOS
-     * Admin can update the role of a specific user
+     * @param roleUpdateDTOS Admin can update the role of a specific user
      * @return updated user details
      */
 
@@ -71,11 +62,8 @@ public class AdminController {
     }
 
     /**
-     *
-     * @param id
-     * Admin can delete a specific role from database
-     * @return
-     * If role is not present in database
+     * @param id Admin can delete a specific role from database
+     * @return If role is not present in database
      * @throws RoleNotFoundException
      */
     @DeleteMapping("/role/delete/{id}")
@@ -85,9 +73,7 @@ public class AdminController {
     }
 
     /**
-     *
-     * @param id
-     * Admin can fetch a specific role by its id
+     * @param id Admin can fetch a specific role by its id
      * @return Role that is fetched
      * If role is not present in database
      * @throws RoleNotFoundException
@@ -100,6 +86,7 @@ public class AdminController {
 
     /**
      * Admin can fetch all the roles in database
+     *
      * @return List of Roles
      */
     @GetMapping("/roles")
@@ -110,6 +97,7 @@ public class AdminController {
 
     /**
      * Admin can view all the users from database
+     *
      * @return List of users
      */
     @GetMapping("/users")
@@ -120,6 +108,7 @@ public class AdminController {
 
     /**
      * Admin can view all the customers from database
+     *
      * @return List of customers
      */
     @GetMapping("/customers")
@@ -130,6 +119,7 @@ public class AdminController {
 
     /**
      * Admin can view all the tasks assigned to users
+     *
      * @return List of Tasks
      */
     @GetMapping("/tasks")
@@ -140,6 +130,7 @@ public class AdminController {
 
     /**
      * Admin can view details of customers fo financing
+     *
      * @return List of customers
      */
     @GetMapping("/customers/names")

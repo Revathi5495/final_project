@@ -3,7 +3,10 @@ package com.sails.client_connect.dto;
 import com.sails.client_connect.entity.Priority;
 import com.sails.client_connect.entity.RecurrencePattern;
 import com.sails.client_connect.entity.Status;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,13 +31,12 @@ public class TaskDTO {
     @Future(message = "Due Date and Time should be in future")
     private LocalDateTime dueDateTime;
 
-    @NotEmpty(message = "Priority is required")
+    @NotNull(message = "Priority is required")
     private Priority priority;
 
-    @NotEmpty(message = "Status is required")
+    @NotNull(message = "Status is required")
     private Status status;
 
-    @NotEmpty(message = "Recurrence Pattern is required")
     private RecurrencePattern recurrencePattern;
 
     private Long userId;

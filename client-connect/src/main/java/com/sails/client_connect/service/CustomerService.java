@@ -6,12 +6,8 @@ import com.sails.client_connect.dto.CustomersFinancingDTO;
 import com.sails.client_connect.entity.Customer;
 import com.sails.client_connect.entity.User;
 import com.sails.client_connect.exception.UserNotFoundException;
-import com.sails.client_connect.mapper.AppointmentMapper;
 import com.sails.client_connect.mapper.CustomerMapper;
-import com.sails.client_connect.mapper.TaskMapper;
-import com.sails.client_connect.repository.AppointmentRepository;
 import com.sails.client_connect.repository.CustomerRepository;
-import com.sails.client_connect.repository.TaskRepository;
 import com.sails.client_connect.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -60,15 +56,15 @@ public class CustomerService {
     /**
      * Retrieve a customer by their ID and associated user ID.
      *
-     * @param id Customer ID
+     * @param id     Customer ID
      * @param userId User ID
      * @return CustomerUpdateDTO with customer details
      * @throws UserNotFoundException if the user is not found
      */
-    public CustomerUpdateDTO getCustomerByIdAndUserId(Long id,Long userId) {
+    public CustomerUpdateDTO getCustomerByIdAndUserId(Long id, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        return customerRepository.findByIdAndUser(id,user)
+        return customerRepository.findByIdAndUser(id, user)
                 .map(customerMapper::toUpdateDto)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + id));
     }
@@ -87,14 +83,15 @@ public class CustomerService {
                 .map(customerMapper::toUpdateDto)
                 .collect(Collectors.toList());
     }
+
     /**
      * Retrieve all customers.
      *
      * @return List of CustomerDTO objects
      */
-    public List<CustomerDTO> getAllCustomers() {
+    public List<CustomerUpdateDTO> getAllCustomers() {
         return customerRepository.findAll().stream()
-                .map(customerMapper::toDto)
+                .map(customerMapper::toUpdateDto)
                 .collect(Collectors.toList());
     }
 
@@ -102,7 +99,7 @@ public class CustomerService {
     /**
      * Update customer details.
      *
-     * @param id Customer ID
+     * @param id          Customer ID
      * @param customerDTO Data Transfer Object containing updated customer details
      * @return Updated CustomerDTO
      */
@@ -142,11 +139,11 @@ public class CustomerService {
     /**
      * Delete a customer by their ID and associated user ID.
      *
-     * @param id Customer ID
+     * @param id     Customer ID
      * @param userId User ID
      * @throws UserNotFoundException if the user is not found
      */
-    public void deleteCustomer(Long id,Long userId) {
+    public void deleteCustomer(Long id, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         Customer customer = customerRepository.findByIdAndUser(id, user)
@@ -157,9 +154,9 @@ public class CustomerService {
     /**
      * Search for customers based on a query string, paginated.
      *
-     * @param query Search query
-     * @param page  Page number
-     * @param size  Page size
+     * @param query  Search query
+     * @param page   Page number
+     * @param size   Page size
      * @param userId User ID
      * @return Page of CustomerUpdateDTO objects
      * @throws UserNotFoundException if the user is not found
@@ -181,22 +178,22 @@ public class CustomerService {
     /**
      * Filter and sort customers based on various fields.
      *
-     * @param id Customer ID
-     * @param firstName First Name
-     * @param lastName Last Name
-     * @param email Email
+     * @param id          Customer ID
+     * @param firstName   First Name
+     * @param lastName    Last Name
+     * @param email       Email
      * @param phoneNumber Phone Number
-     * @param address Address
-     * @param page Page number
-     * @param size Page size
-     * @param sort Sorting criteria
-     * @param userId User ID
+     * @param address     Address
+     * @param page        Page number
+     * @param size        Page size
+     * @param sort        Sorting criteria
+     * @param userId      User ID
      * @return Page of CustomerUpdateDTO objects
      * @throws UserNotFoundException if the user is not found
      */
     public Page<CustomerUpdateDTO> filterAndSortCustomers(Long id, String firstName, String lastName,
-                                                    String email, String phoneNumber, String address,
-                                                    int page, int size, Sort sort, Long userId) {
+                                                          String email, String phoneNumber, String address,
+                                                          int page, int size, Sort sort, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         Pageable pageable = PageRequest.of(page, size, sort);

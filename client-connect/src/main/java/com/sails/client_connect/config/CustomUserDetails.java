@@ -1,7 +1,6 @@
 package com.sails.client_connect.config;
 
 
-
 import com.sails.client_connect.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,6 +18,7 @@ public class CustomUserDetails implements UserDetails {
     /**
      * Fetching the roles enum from database
      * Converting each role to String And mapping them
+     *
      * @return Set of Roles
      */
     @Override
@@ -30,6 +30,7 @@ public class CustomUserDetails implements UserDetails {
 
     /**
      * Fetching the password from database
+     *
      * @return password
      */
     @Override
@@ -39,6 +40,7 @@ public class CustomUserDetails implements UserDetails {
 
     /**
      * Fetching the username from database
+     *
      * @return username
      */
     @Override

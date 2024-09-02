@@ -25,12 +25,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
     /**
-     *
      * @param request
      * @param response
-     * @param filterChain
-     * Fetches the token break it using substring to fetch the username from it
-     * Fetches the user details using username and validates the validates that token with the details from database
+     * @param filterChain Fetches the token break it using substring to fetch the username from it
+     *                    Fetches the user details using username and validates the validates that token with the details from database
      * @throws ServletException
      * @throws IOException
      */
@@ -45,7 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             username = jwtService.extractUsername(token);
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null){
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
             if (jwtService.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
